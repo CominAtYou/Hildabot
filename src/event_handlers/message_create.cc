@@ -1,0 +1,25 @@
+#include <dpp/dpp.h>
+#include "config.h"
+#include "message_create.h"
+
+bool test_message_validity(const dpp::message& message) {
+    if (message.author.is_bot()) return false;
+    if (message.webhook_id != 0) return false;
+    if (message.type != dpp::mt_default && message.type != dpp::mt_reply) return false;
+    if (message.content.empty() && message.attachments.empty()) return false;
+
+    return true;
+}
+
+namespace events {
+    void handle_message_create(const dpp::cluster& bot, const dpp::message_create_t& event) {
+        if (!test_message_validity(event.msg)) return;
+
+        if (!event.msg.content.starts_with(PREFIX) && !event.msg.guild_id.empty() && event.msg.guild_id == BASE_GUILD_ID) {
+
+        }
+        else {
+
+        }
+    }
+}
