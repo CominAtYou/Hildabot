@@ -3,6 +3,7 @@
 #include "constants.h"
 #include "message_create.h"
 #include "xp/xp_system.h"
+#include "commands/text_command_processor.h"
 
 bool test_message_validity(const dpp::message& message) {
     if (message.author.is_bot()) return false;
@@ -22,7 +23,7 @@ namespace events {
             co_await xp::give_xp_for_message(event);
         }
         else {
-
+            co_await commands::run_command(event);
         }
     }
 }
