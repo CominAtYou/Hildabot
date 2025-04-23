@@ -10,6 +10,8 @@
 #include "db/user_entry.h"
 #include "rank/rank_util.h"
 #include "constants.h"
+#include "logging/logging.h"
+#include "rank/rank_util.h"
 
 const std::vector<dpp::snowflake> ignored_channels = { dpp::snowflake{ 495034452422950915L } };
 
@@ -47,7 +49,7 @@ namespace xp {
         // Check if level up occurred.
         if (current_level <= before_action_level) co_return;
 
-        // TODO: Log level up (XPSystem.java:65)
+        co_await logging::event(event.owner, "LevelUp", "{} ({}) leveled up to {}: {} XP", user.username, user.id.str(), current_level, user_entry.get_xp());
 
         const bool is_rank_level = rankutil::is_level_rank_level(current_level);
 
@@ -56,10 +58,10 @@ namespace xp {
             const std::string level_up_message_text = std::format("Congrats on leveling up! You are now level **{}**! :tada:", current_level);
             const std::string embed_title = is_rank_level ? rank_up_message_text : level_up_message_text;
 
-            dpp::embed embed;
-            embed.set_color(HILDA_BLUE);
-            embed.set_title(embed_title);
-            embed.set_description("To disable this message going forward, run `h!levelalert` in this DM or <#495034452422950915>.");
+            dpp::embed embed = dpp::embed{}
+                .set_color(HILDA_BLUE)
+                .set_title(embed_title)
+                .set_description("To disable this message going forward, run `h!levelalert` in this DM or <#495034452422950915>.");
 
             dpp::message message;
             message.add_embed(embed);
@@ -67,35 +69,68 @@ namespace xp {
             dpp::confirmation_callback_t callback = co_await event.owner->co_direct_message_create(user.id, message);
 
             if (callback.is_error()) {
-                // todo: log failure
-                co_return;
+                co_await logging::error(event.owner, "LevelAlert", "Failed to send level up message to {}.\n{}", user.username, callback.get_error().message);
             }
             else {
-                // todo: log success
+                co_await logging::event(event.owner, "LevelAlert", "Sent level up message to {}.", user.username);
             }
         }
         else {
-            // todo: log skipped level up message
+            co_await logging::event(event.owner, "LevelAlert", "Not sending a message to {} as they have level alerts off.", user.username);
         }
 
         if (is_rank_level) {
-            const uint64_t role_id = rankutil::rank_from_level(current_level).role_id;
+            const Rank rank = rankutil::rank_from_level(current_level);
             user_entry.increment_tokens(40);
 
             dpp::confirmation_callback_t callback = co_await event.owner->co_guild_get_member(BASE_GUILD_ID, user.id);
 
+            dpp::embed embed = dpp::embed{}
+                .set_title("Failed to assign role!")
+                .set_description("Role assignment for a level up did not complete successfully.")
+                .add_field("User", std::format("{} ({})", user.username, user.id.str()), true)
+                .add_field("Role", std::format("{} ({})", rank.name, rank.level), true)
+                .set_color(ERROR_RED);
+
             if (callback.is_error()) {
-                // todo: log error or something
+                co_await logging::error(event.owner, "LevelAlert", "Failed to assign {} to {} ({})!", rank.name, user.username, user.id.str());
+
+                auto callback = co_await event.owner->co_current_application_get();
+                if (callback.is_error()) {
+                    // something is seriously wrong
+                    co_return;
+                }
+
+                dpp::application app = callback.get<dpp::application>();
+                const dpp::snowflake owner_id = app.owner.id;
+
+                dpp::message message;
+                message.add_embed(embed);
+
+                co_await event.owner->co_direct_message_create(owner_id, message);
                 co_return;
             }
 
             dpp::guild_member member = callback.get<dpp::guild_member>();
-            member.add_role(role_id);
+            member.add_role(rank.role_id);
             dpp::confirmation_callback_t edit_callback = co_await event.owner->co_guild_edit_member(member);
 
             if (edit_callback.is_error()) {
-                // TODO: log error
-                co_return;
+                co_await logging::error(event.owner, "LevelAlert", "Failed to assign {} to {} ({})!", rank.name, user.username, user.id.str());
+
+                auto callback = co_await event.owner->co_current_application_get();
+                if (callback.is_error()) {
+                    // something is seriously wrong
+                    co_return;
+                }
+
+                dpp::application app = callback.get<dpp::application>();
+                const dpp::snowflake owner_id = app.owner.id;
+
+                dpp::message message;
+                message.add_embed(embed);
+
+                co_await event.owner->co_direct_message_create(owner_id, message);
             }
         }
         else {
