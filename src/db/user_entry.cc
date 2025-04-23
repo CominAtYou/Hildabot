@@ -224,14 +224,16 @@ void UserEntry::increment_recent_message_count() {
     }
 }
 
-void UserEntry::reset_recent_message_count() {
+inline void UserEntry::reset_recent_message_count() {
     auto& db = MongoDatabase::get_database();
     db["users"].update_one(
         make_document(kvp("_id", user_id)),
         make_document(kvp("$set", make_document(
-            kvp("recentmessages", make_document(kvp("count", 0))),
-            kvp("recentmessages", make_document(kvp("resets_at", DB_NULL)
-        )))))
+            kvp("recentmessages", make_document(
+                kvp("count", 0),
+                kvp("resets_at", DB_NULL))
+            )
+        )))
     );
 }
 
