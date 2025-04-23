@@ -2,6 +2,7 @@
 #include "config.h"
 #include "constants.h"
 #include "message_create.h"
+#include "xp/xp_system.h"
 
 bool test_message_validity(const dpp::message& message) {
     if (message.author.is_bot()) return false;
@@ -17,7 +18,8 @@ namespace events {
         if (!test_message_validity(event.msg)) co_return;
 
         if (!event.msg.content.starts_with(PREFIX) && !event.msg.guild_id.empty() && event.msg.guild_id == BASE_GUILD_ID) {
-
+            // Standard XP-eligible message
+            co_await xp::give_xp_for_message(event);
         }
         else {
 
