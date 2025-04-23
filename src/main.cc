@@ -5,7 +5,7 @@
 
 int main() {
     dpp::cluster bot(BOT_TOKEN);
-    bot.intents = dpp::i_default_intents | dpp::i_message_content | dpp::i_guild_members | dpp::i_guild_messages;
+    bot.intents = dpp::i_default_intents | dpp::i_message_content | dpp::i_guild_members;
 
     // midnight tasks: birthdays, streak expiries, streak warnings
 
