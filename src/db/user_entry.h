@@ -1,18 +1,20 @@
+#pragma once
+
 #include <dpp/user.h>
 #include <bsoncxx/builder/basic/document.hpp>
 #include <optional>
 #include <vector>
 #include <cstdint>
+#include <string>
 #include <utility>
 
 class UserEntry {
     private:
-        int64_t user_id;
+        std::string user_id;
         void reset_recent_message_count();
+        bsoncxx::document::value get_user_document();
     public:
         UserEntry(const dpp::user& user);
-
-        bsoncxx::document::value get_user_document();
 
         int get_kudos_received();
         void increment_kudos_received();
@@ -27,7 +29,6 @@ class UserEntry {
         void decrement_tokens(const int amount);
 
         std::optional<int64_t> get_streak_expiry();
-        void set_streak_expiry(const int64_t expiry);
         void reset_streak_expiry();
 
         int get_streak();
@@ -41,9 +42,9 @@ class UserEntry {
         void set_birthday(const int month, const int day);
 
         // submit boosts?
-        std::optional<std::vector<float>> get_submit_boosts();
-        void add_submit_boosts(const std::vector<float> boosts);
-        std::optional<float> shift_out_submit_boost();
+        std::optional<std::vector<double>> get_submit_boosts();
+        void add_submit_boosts(const std::vector<double> boosts);
+        std::optional<double> shift_out_submit_boost();
 
         int get_times_submitted();
         void increment_times_submitted();
@@ -61,7 +62,7 @@ class UserEntry {
 
         bool has_submitted_today();
 
-        bool get_level_alerts_state();
-        void set_level_alerts_state(bool state);
+        bool get_level_alerts_preference();
+        void set_level_alerts_preference(bool state);
 
 };
