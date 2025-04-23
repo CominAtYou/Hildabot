@@ -373,15 +373,15 @@ void UserEntry::set_latest_submission_id(dpp::snowflake submission_id) {
     );
 }
 
-bool UserEntry::get_streak_warnings_state() {
-    return get_user_document()["streak_warnings_disabled"].get_bool();
+bool UserEntry::get_streak_warnings_preference() {
+    return !get_user_document()["streak_warnings_disabled"].get_bool();
 }
 
-void UserEntry::set_streak_warnings_state(bool state) {
+void UserEntry::set_streak_warnings_preference(const bool state) {
     auto& db = MongoDatabase::get_database();
     db["users"].update_one(
         make_document(kvp("_id", user_id)),
-        make_document(kvp("$set", make_document(kvp("streak_warnings_disabled", state))))
+        make_document(kvp("$set", make_document(kvp("streak_warnings_disabled", !state))))
     );
 }
 
