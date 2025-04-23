@@ -165,8 +165,6 @@ std::pair<int, int64_t> UserEntry::increment_streak() {
         );
     }
 
-    int new_streak = get_user_document()["streak"]["count"].get_int32();
-
     return {new_streak, week_after_now};
 }
 
@@ -211,8 +209,10 @@ void UserEntry::increment_recent_message_count() {
         db["users"].update_one(
             make_document(kvp("_id", user_id)),
             make_document(kvp("$set", make_document(
-                kvp("recentmessages.count", 1),
-                kvp("recentmessages.resets_at", seconds_since_epoch + 30)
+                kvp("recentmessages", make_document(
+                    kvp("count", 1),
+                    kvp("resets_at", seconds_since_epoch + 30)
+                ))
             )))
         );
     }
@@ -403,6 +403,14 @@ void UserEntry::increment_xp(const int amount) {
 
 bool UserEntry::has_submitted_today() {
     return get_user_document()["submitted"].get_bool();
+}
+
+void UserEntry::mark_submitted_today() {
+    auto& db = MongoDatabase::get_database();
+    db["users"].update_one(
+        make_document(kvp("_id", user_id)),
+        make_document(kvp("$set", make_document(kvp("submitted", true))))
+    );
 }
 
 bool UserEntry::get_level_alerts_preference() {

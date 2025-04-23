@@ -5,6 +5,7 @@
 
 int main() {
     dpp::cluster bot(BOT_TOKEN);
+    bot.intents = dpp::i_default_intents | dpp::i_message_content | dpp::i_guild_members | dpp::i_guild_messages;
 
     // midnight tasks: birthdays, streak expiries, streak warnings
 
@@ -12,8 +13,8 @@ int main() {
         std::cout << "Logged in as " << bot.me.format_username() << "\n";
     });
 
-    bot.on_message_create([&bot](const dpp::message_create_t& event) {
-        events::handle_message_create(bot, event);
+    bot.on_message_create([&bot](const dpp::message_create_t& event) -> dpp::task<void> {
+        co_await events::handle_message_create(bot, event);
     });
 
     bot.start(dpp::st_wait);

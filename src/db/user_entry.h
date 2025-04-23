@@ -61,6 +61,7 @@ class UserEntry {
         void increment_xp(const int amount);
 
         bool has_submitted_today();
+        void mark_submitted_today();
 
         bool get_level_alerts_preference();
         void set_level_alerts_preference(bool state);

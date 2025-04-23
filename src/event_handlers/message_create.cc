@@ -1,5 +1,6 @@
 #include <dpp/dpp.h>
 #include "config.h"
+#include "constants.h"
 #include "message_create.h"
 
 bool test_message_validity(const dpp::message& message) {
@@ -12,8 +13,8 @@ bool test_message_validity(const dpp::message& message) {
 }
 
 namespace events {
-    void handle_message_create(const dpp::cluster& bot, const dpp::message_create_t& event) {
-        if (!test_message_validity(event.msg)) return;
+    dpp::task<void> handle_message_create(const dpp::cluster& bot, const dpp::message_create_t& event) {
+        if (!test_message_validity(event.msg)) co_return;
 
         if (!event.msg.content.starts_with(PREFIX) && !event.msg.guild_id.empty() && event.msg.guild_id == BASE_GUILD_ID) {
 
