@@ -4,8 +4,10 @@
 #include "config.h"
 #include <unordered_map>
 
-std::unordered_map<std::string, std::function<dpp::task<void>(const dpp::message_create_t&)>> command_map = {
+#include "commands/submit.h"
 
+static std::unordered_map<std::string, std::function<dpp::task<void>(const dpp::message_create_t&, const std::vector<std::string>&)>> command_map = {
+    {"submit", commands::submit::execute}
 };
 
 namespace commands {
@@ -23,8 +25,7 @@ namespace commands {
         message_content_split.erase(message_content_split.begin());
 
         if (command_map.find(command) != command_map.end()) {
-            co_await command_map[command](event);
+            co_await command_map[command](event, message_content_split);
         }
     }
-
 }
