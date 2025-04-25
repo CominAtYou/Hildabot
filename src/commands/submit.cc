@@ -5,6 +5,7 @@
 #include <string>
 #include <numeric>
 #include <format>
+#include <cmath>
 #include <utility>
 #include "db/user_entry.h"
 #include "util/helpers.h"
@@ -54,7 +55,7 @@ namespace commands {
             }
 
             int current_level = user.get_level();
-            int xp_amount = 20 + 2 * user.get_streak();
+            int xp_amount = 20 + static_cast<int>(std::floor(0.5f * user.get_streak()));
 
             double multiplier = 1;
             const auto potential_boost = user.shift_out_submit_boost();
