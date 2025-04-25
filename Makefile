@@ -31,3 +31,8 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.cc
 .PHONY: clean
 clean:
 	rm -rf $(BUILDDIR) $(TARGET)
+
+# debug builds add the -g flag
+.PHONY: debug
+debug: CXXFLAGS += -g
+debug: $(TARGET)
