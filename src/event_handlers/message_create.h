@@ -2,5 +2,5 @@
 #include <dpp/dpp.h>
 
 namespace events {
-    dpp::task<void> handle_message_create(const dpp::cluster& bot, const dpp::message_create_t& event);
+    dpp::task<void> handle_message_create(const dpp::message_create_t& event);
 }

@@ -15,7 +15,7 @@ bool test_message_validity(const dpp::message& message) {
 }
 
 namespace events {
-    dpp::task<void> handle_message_create(const dpp::cluster& bot, const dpp::message_create_t& event) {
+    dpp::task<void> handle_message_create(const dpp::message_create_t& event) {
         if (!test_message_validity(event.msg)) co_return;
 
         if (!event.msg.content.starts_with(PREFIX) && !event.msg.guild_id.empty() && event.msg.guild_id == BASE_GUILD_ID) {

@@ -15,8 +15,8 @@ int main() {
         std::cout << "Logged in as " << bot.me.format_username() << "\n";
     });
 
-    bot.on_message_create([&bot](const dpp::message_create_t& event) -> dpp::task<void> {
-        co_await events::handle_message_create(bot, event);
+    bot.on_message_create([](const dpp::message_create_t& event) -> dpp::task<void> {
+        co_await events::handle_message_create(event);
     });
 
     bot.start(dpp::st_wait);
