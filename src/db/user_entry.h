@@ -66,4 +66,6 @@ class UserEntry {
         bool get_level_alerts_preference();
         void set_level_alerts_preference(bool state);
 
+        int get_level();
+
 };

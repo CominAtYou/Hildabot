@@ -5,7 +5,9 @@
 #include <chrono>
 #include <deque>
 #include <utility>
+#include <iterator>
 #include "util/helpers.h"
+#include "xp/xp_system_calculator.h"
 
 using bsoncxx::builder::basic::make_document;
 using bsoncxx::builder::basic::make_array;
@@ -121,7 +123,15 @@ std::optional<int64_t> UserEntry::get_streak_expiry() {
         return std::nullopt;
     }
 
-    return field.get_int64();
+    int64_t value = field.get_int64();
+
+    if (value <= util::seconds_since_epoch()) {
+        // If the expiry is in the past, reset the streak expiry
+        reset_streak_expiry();
+        return std::nullopt;
+    }
+
+    return value;
 }
 
 void UserEntry::reset_streak_expiry() {
@@ -129,18 +139,26 @@ void UserEntry::reset_streak_expiry() {
     db["users"].update_one(
         make_document(kvp("_id", user_id)),
         make_document(kvp("$set", make_document(
-            kvp("streak", make_document(kvp("expiry", DB_NULL)))
+            kvp("streak.expiry", DB_NULL)
         )))
     );
 }
 
 int UserEntry::get_streak() {
+    std::optional<int64_t> expiry = get_streak_expiry();
+
+    if (expiry.has_value() && expiry <= util::seconds_since_epoch()) {
+        // If the streak has expired, reset it
+        reset_streak();
+        return 0;
+    }
+
     return get_user_document()["streak"]["count"].get_int32();
 }
 
 std::pair<int, int64_t> UserEntry::increment_streak() {
     auto& db = MongoDatabase::get_database();
-    int64_t week_after_now = util::midnight_today_seconds() + 604800;
+    int64_t week_after_now = util::midnight_seconds_in_a_week();
 
     db["users"].update_one(
         make_document(kvp("_id", user_id)),
@@ -149,14 +167,11 @@ std::pair<int, int64_t> UserEntry::increment_streak() {
 
     db["users"].update_one(
         make_document(kvp("_id", user_id)),
-        make_document(kvp("$set", make_document(kvp("streak", make_document(
-            kvp("expiry", week_after_now)
-        )))))
+        make_document(kvp("$set", make_document(kvp("streak.expiry", week_after_now))))
     );
 
-    auto document = get_user_document();
-    const int new_streak = document["streak"]["count"].get_int32();
-    const int high_score = document["high_score"].get_int32();
+    const int new_streak = get_streak();
+    const int high_score = get_high_score();
 
     if (new_streak > high_score) {
         db["users"].update_one(
@@ -172,10 +187,12 @@ void UserEntry::reset_streak() {
     auto& db = MongoDatabase::get_database();
     db["users"].update_one(
         make_document(kvp("_id", user_id)),
-        make_document(kvp("$set", make_document(kvp("streak", make_document(
-            kvp("count", 0),
-            kvp("expiry", DB_NULL)
-        )))))
+        make_document(kvp("$set", make_document(kvp("streak",
+            make_document(
+                kvp("count", 0),
+                kvp("expiry", DB_NULL)
+            )
+        ))))
     );
 }
 
@@ -318,8 +335,9 @@ std::optional<double> UserEntry::shift_out_submit_boost() {
     }
 
     auto boosts = items["submit_boosts"].get_array().value;
+    const int length = std::distance(boosts.begin(), boosts.end());
 
-    if (boosts.length() == 0) {
+    if (length == 0) {
         return std::nullopt; // No boosts available
     }
 
@@ -327,12 +345,8 @@ std::optional<double> UserEntry::shift_out_submit_boost() {
 
     bsoncxx::builder::basic::array remaining_boosts;
 
-    for (size_t i = 0; i < boosts.length() - 1; ++i) {
-        if (i == 0) {
-            continue; // Skip the first element
-        }
-
-        remaining_boosts.append(boosts[i].get_double());
+    for (auto it = ++boosts.begin(); it != boosts.end(); ++it) {
+        remaining_boosts.append(it->get_double());
     }
 
     db["users"].update_one(
@@ -425,5 +439,11 @@ void UserEntry::set_level_alerts_preference(const bool state) {
         make_document(kvp("_id", user_id)),
         make_document(kvp("$set", make_document(kvp("level_alerts_disabled", !state))))
     );
+}
+
+int UserEntry::get_level() {
+    auto doc = get_user_document();
+    int xp = doc["xp"].get_int32();
+    return xp::calculator::level_from_xp(xp);
 }
 
