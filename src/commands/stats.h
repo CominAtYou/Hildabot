@@ -1,3 +1,5 @@
+#pragma once
+
 #include <dpp/dpp.h>
 #include <vector>
 #include <string>
