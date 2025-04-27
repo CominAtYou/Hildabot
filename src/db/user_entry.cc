@@ -43,7 +43,7 @@ UserEntry::UserEntry(const dpp::user& user) {
             kvp("streak_warnings_disabled", false),
             kvp("high_score", 0),
             kvp("xp", 0),
-            kvp("submitted", false),
+            kvp("last_submitted_at", DB_NULL),
             kvp("level_alerts_disabled", false)
         ));
     }
@@ -156,9 +156,10 @@ int UserEntry::get_streak() {
     return get_user_document()["streak"]["count"].get_int32();
 }
 
-std::pair<int, int64_t> UserEntry::increment_streak() {
+std::pair<int, int64_t> UserEntry::process_submission(const dpp::snowflake& submission_id) {
     auto& db = MongoDatabase::get_database();
     int64_t week_after_now = util::midnight_seconds_in_a_week();
+    const int64_t id = static_cast<int64_t>(static_cast<unsigned long>(submission_id));
 
     db["users"].update_one(
         make_document(kvp("_id", user_id)),
@@ -168,6 +169,21 @@ std::pair<int, int64_t> UserEntry::increment_streak() {
     db["users"].update_one(
         make_document(kvp("_id", user_id)),
         make_document(kvp("$set", make_document(kvp("streak.expiry", week_after_now))))
+    );
+
+    db["users"].update_one(
+        make_document(kvp("_id", user_id)),
+        make_document(kvp("$set", make_document(kvp("last_submitted_at", util::seconds_since_epoch()))))
+    );
+
+    db["users"].update_one(
+        make_document(kvp("_id", user_id)),
+        make_document(kvp("$inc", make_document(kvp("times_submitted", 1))))
+    );
+
+    db["users"].update_one(
+        make_document(kvp("_id", user_id)),
+        make_document(kvp("$set", make_document(kvp("latest_submission_id", id))))
     );
 
     const int new_streak = get_streak();
@@ -361,14 +377,6 @@ int UserEntry::get_times_submitted() {
     return get_user_document()["times_submitted"].get_int32();
 }
 
-void UserEntry::increment_times_submitted() {
-    auto& db = MongoDatabase::get_database();
-    db["users"].update_one(
-        make_document(kvp("_id", user_id)),
-        make_document(kvp("$inc", make_document(kvp("times_submitted", 1))))
-    );
-}
-
 std::optional<dpp::snowflake> UserEntry::get_latest_submission_id() {
     auto field = get_user_document()["latest_submission_id"];
 
@@ -377,16 +385,6 @@ std::optional<dpp::snowflake> UserEntry::get_latest_submission_id() {
     }
 
     return dpp::snowflake { field.get_int64().value };
-}
-
-void UserEntry::set_latest_submission_id(dpp::snowflake submission_id) {
-    auto& db = MongoDatabase::get_database();
-    int64_t id = static_cast<int64_t>(static_cast<unsigned long>(submission_id));
-
-    db["users"].update_one(
-        make_document(kvp("_id", user_id)),
-        make_document(kvp("$set", make_document(kvp("latest_submission_id", id))))
-    );
 }
 
 bool UserEntry::get_streak_warnings_preference() {
@@ -418,15 +416,15 @@ void UserEntry::increment_xp(const int amount) {
 }
 
 bool UserEntry::has_submitted_today() {
-    return get_user_document()["submitted"].get_bool();
-}
+    int midnight_today = util::midnight_today_seconds();
+    auto doc = get_user_document();
 
-void UserEntry::mark_submitted_today() {
-    auto& db = MongoDatabase::get_database();
-    db["users"].update_one(
-        make_document(kvp("_id", user_id)),
-        make_document(kvp("$set", make_document(kvp("submitted", true))))
-    );
+    if (doc["last_submitted_at"].type() == bsoncxx::type::k_null) {
+        return false; // No submission today
+    }
+
+    int64_t last_submitted_at = doc["last_submitted_at"].get_int64();
+    return last_submitted_at >= midnight_today;
 }
 
 bool UserEntry::get_level_alerts_preference() {

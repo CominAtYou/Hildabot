@@ -32,7 +32,7 @@ class UserEntry {
         void reset_streak_expiry();
 
         int get_streak();
-        std::pair<int, int64_t> increment_streak();
+        std::pair<int, int64_t> process_submission(const dpp::snowflake& submission_id);
         void reset_streak();
 
         int get_recent_message_count();
@@ -47,10 +47,8 @@ class UserEntry {
         std::optional<double> shift_out_submit_boost();
 
         int get_times_submitted();
-        void increment_times_submitted();
 
         std::optional<dpp::snowflake> get_latest_submission_id();
-        void set_latest_submission_id(dpp::snowflake submission_id);
 
         bool get_streak_warnings_preference();
         void set_streak_warnings_preference(bool state);
@@ -61,7 +59,6 @@ class UserEntry {
         void increment_xp(const int amount);
 
         bool has_submitted_today();
-        void mark_submitted_today();
 
         bool get_level_alerts_preference();
         void set_level_alerts_preference(bool state);

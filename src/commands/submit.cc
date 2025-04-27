@@ -54,8 +54,8 @@ namespace commands {
                 co_return;
             }
 
-            int current_level = user.get_level();
-            int xp_amount = 20 + static_cast<int>(std::floor(0.5f * user.get_streak()));
+            const int current_level = user.get_level();
+            int xp_amount = 20 + user.get_streak();
 
             double multiplier = 1;
             const auto potential_boost = user.shift_out_submit_boost();
@@ -65,12 +65,9 @@ namespace commands {
             }
 
             user.increment_xp(xp_amount);
-            user.set_latest_submission_id(event.msg.id);
-            user.mark_submitted_today();
-            user.increment_times_submitted();
             user.increment_tokens(30);
 
-            const std::pair<int, int64_t> streak_pair = user.increment_streak();
+            const std::pair<int, int64_t> streak_pair = user.process_submission(event.msg.id);
             const int new_streak = streak_pair.first;
             const int64_t streak_expiry = streak_pair.second;
 
