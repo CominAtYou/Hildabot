@@ -34,5 +34,5 @@ clean:
 
 # debug builds add the -g flag
 .PHONY: debug
-debug: CXXFLAGS += -g
+debug: CXXFLAGS += -g -DDEBUG
 debug: $(TARGET)

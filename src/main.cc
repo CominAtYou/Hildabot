@@ -2,10 +2,15 @@
 #include "config.h"
 #include "event_handlers/message_create.h"
 #include <iostream>
+#include "constants.h"
 
 int main() {
     dpp::cluster bot(BOT_TOKEN);
     bot.intents = dpp::i_default_intents | dpp::i_message_content | dpp::i_guild_members;
+
+    #ifdef DEBUG
+    std::cout << "====== DEBUG BUILD ======\n";
+    #endif
 
     bot.on_log(dpp::utility::cout_logger());
 
