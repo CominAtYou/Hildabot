@@ -20,7 +20,7 @@ namespace xp {
             if (level < 2) return 0;
 
             int xp = 50;
-            for (int i = 2; i <= level; i++) {
+            for (int i = 2; i < level; i++) {
                 xp += 50 + 15 * (i - 1);
             }
 
