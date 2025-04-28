@@ -6,6 +6,7 @@
 #include <deque>
 #include <utility>
 #include <iterator>
+#include <dpp/dpp.h>
 #include "util/helpers.h"
 #include "xp/xp_system_calculator.h"
 
@@ -15,7 +16,15 @@ using bsoncxx::builder::basic::kvp;
 
 UserEntry::UserEntry(const dpp::user& user) {
     this->user_id = user.id.str();
+    create_entry_if_not_present(this->user_id);
+}
 
+UserEntry::UserEntry(const dpp::guild_member& member) {
+    this->user_id = member.user_id.str();
+    create_entry_if_not_present(this->user_id);
+}
+
+void UserEntry::create_entry_if_not_present(const std::string user_id) {
     auto& db = MongoDatabase::get_database();
     auto result = db["users"].find_one(make_document(kvp("_id", user_id)));
 

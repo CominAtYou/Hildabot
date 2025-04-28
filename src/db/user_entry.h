@@ -12,9 +12,11 @@ class UserEntry {
     private:
         std::string user_id;
         void reset_recent_message_count();
+        void create_entry_if_not_present(const std::string user_id);
         bsoncxx::document::value get_user_document();
     public:
         UserEntry(const dpp::user& user);
+        UserEntry(const dpp::guild_member& member);
 
         int get_kudos_received();
         void increment_kudos_received();
