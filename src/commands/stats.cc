@@ -12,7 +12,7 @@
 
 namespace commands {
     namespace stats {
-        dpp::task<void> execute(const dpp::message_create_t& event, const std::vector<std::string> args) {
+        dpp::task<void> execute(const dpp::message_create_t& event, const std::vector<std::string>& args) {
             if (event.msg.channel_id != BOT_CHANNEL_ID) {
                 auto callback = co_await event.owner->co_current_application_get();
 
