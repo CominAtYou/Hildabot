@@ -1,6 +1,6 @@
 #pragma once
 
-#include <dpp/user.h>
+#include <dpp/dpp.h>
 #include <bsoncxx/builder/basic/document.hpp>
 #include <optional>
 #include <vector>
