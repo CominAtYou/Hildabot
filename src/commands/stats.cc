@@ -45,18 +45,25 @@ namespace commands {
                 user = dynamic_cast<dpp::user&>(user_identified);
             }
 
-            auto member = co_await event.owner->co_guild_get_member(BASE_GUILD_ID, id);
+            dpp::guild_member guild_member;
 
-            if (member.is_error()) {
-                dpp::message reply = dpp::message{}
-                    .set_content("That ID doesn't seem to belong to anyone here.")
-                    .set_channel_id(event.msg.channel_id);
+            if (id != event.msg.author.id) {
+                auto member = co_await event.owner->co_guild_get_member(BASE_GUILD_ID, id);
 
-                co_await event.owner->co_message_create(reply);
-                co_return;
+                if (member.is_error()) {
+                    dpp::message reply = dpp::message{}
+                        .set_content("That ID doesn't seem to belong to anyone here.")
+                        .set_channel_id(event.msg.channel_id);
+
+                    co_await event.owner->co_message_create(reply);
+                    co_return;
+                }
+
+                guild_member = member.get<dpp::guild_member>();
             }
-
-            dpp::guild_member guild_member = member.get<dpp::guild_member>();
+            else {
+                guild_member = event.msg.member;
+            }
 
             UserEntry user_entry(user);
 

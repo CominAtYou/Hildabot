@@ -84,35 +84,19 @@ namespace xp {
             const Rank rank = rankutil::rank_from_level(current_level);
             user_entry.increment_tokens(40);
 
-            dpp::confirmation_callback_t callback = co_await event.owner->co_guild_get_member(BASE_GUILD_ID, user.id);
+            dpp::guild_member member = event.msg.member;
 
-            dpp::embed embed = dpp::embed{}
-                .set_title("Failed to assign role!")
-                .set_description("Role assignment for a level up did not complete successfully.")
-                .add_field("User", std::format("{} ({})", user.username, user.id.str()), true)
-                .add_field("Role", std::format("{} ({})", rank.name, rank.level), true)
-                .set_color(ERROR_RED);
-
-            if (callback.is_error()) {
-                co_await logging::error(event.owner, "LevelAlert", "Failed to assign {} to {} ({})!", rank.name, user.username, user.id.str());
-
-                auto owner_id_opt = co_await util::get_owner_id(event.owner);
-                if (!owner_id_opt.has_value()) {
-                    co_return;
-                }
-
-                dpp::message message;
-                message.add_embed(embed);
-
-                co_await event.owner->co_direct_message_create(*owner_id_opt, message);
-                co_return;
-            }
-
-            dpp::guild_member member = callback.get<dpp::guild_member>();
             member.add_role(rank.role_id);
             dpp::confirmation_callback_t edit_callback = co_await event.owner->co_guild_edit_member(member);
 
             if (edit_callback.is_error()) {
+                dpp::embed embed = dpp::embed{}
+                    .set_title("Failed to assign role!")
+                    .set_description("Role assignment for a level up did not complete successfully.")
+                    .add_field("User", std::format("{} ({})", user.username, user.id.str()), true)
+                    .add_field("Role", std::format("{} ({})", rank.name, rank.level), true)
+                    .set_color(ERROR_RED);
+
                 co_await logging::error(event.owner, "LevelAlert", "Failed to assign {} to {} ({})!", rank.name, user.username, user.id.str());
 
                 auto owner_id_opt = co_await util::get_owner_id(event.owner);

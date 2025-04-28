@@ -32,19 +32,7 @@ namespace commands {
             const int rank_level = rankutil::rank_from_level(user_entry.get_level()).level;
             const int index = std::distance(rankutil::rank_levels, std::find(rankutil::rank_levels, rankutil::rank_levels + sizeof(rankutil::rank_levels) / sizeof(rankutil::rank_levels[0]), rank_level));
 
-            auto callback = co_await event.owner->co_guild_get_member(BASE_GUILD_ID, user.id);
-            if (callback.is_error()) {
-                dpp::message reply = dpp::message{}
-                    .set_content("Something went wrong. Give it another shot, or try again later.")
-                    .set_reference(event.msg.id)
-                    .set_channel_id(event.msg.channel_id)
-                    .set_allowed_mentions();
-
-                co_await event.owner->co_message_create(reply);
-                co_return;
-            }
-
-            dpp::guild_member member = callback.get<dpp::guild_member>();
+            dpp::guild_member member = event.msg.member;
             const std::vector<dpp::snowflake>& roles = member.get_roles();
 
             int restored_roles = 0;
