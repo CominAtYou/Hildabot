@@ -1,15 +1,17 @@
 #include <dpp/dpp.h>
 #include <string>
 #include <sstream>
+#include <unordered_map>
 #include "config.h"
 #include "stats.h"
-#include <unordered_map>
+#include "levelcheck.h"
 
 #include "commands/submit.h"
 
 static std::unordered_map<std::string, std::function<dpp::task<void>(const dpp::message_create_t&, const std::vector<std::string>&)>> command_map = {
     {"submit", commands::submit::execute},
     {"stats", commands::stats::execute},
+    {"levelcheck", commands::levelcheck::execute}
 };
 
 namespace commands {
