@@ -96,7 +96,7 @@ namespace xp {
             if (callback.is_error()) {
                 co_await logging::error(event.owner, "LevelAlert", "Failed to assign {} to {} ({})!", rank.name, user.username, user.id.str());
 
-                auto owner_id_opt = co_await util::get_owner_id(*event.owner);
+                auto owner_id_opt = co_await util::get_owner_id(event.owner);
                 if (!owner_id_opt.has_value()) {
                     co_return;
                 }
@@ -115,7 +115,7 @@ namespace xp {
             if (edit_callback.is_error()) {
                 co_await logging::error(event.owner, "LevelAlert", "Failed to assign {} to {} ({})!", rank.name, user.username, user.id.str());
 
-                auto owner_id_opt = co_await util::get_owner_id(*event.owner);
+                auto owner_id_opt = co_await util::get_owner_id(event.owner);
                 if (!owner_id_opt.has_value()) {
                     co_return;
                 }

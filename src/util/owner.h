@@ -2,5 +2,5 @@
 #include <optional>
 
 namespace util {
-    dpp::task<std::optional<dpp::snowflake>> get_owner_id(dpp::cluster& bot);
+    dpp::task<std::optional<dpp::snowflake>> get_owner_id(dpp::cluster* bot);
 }
