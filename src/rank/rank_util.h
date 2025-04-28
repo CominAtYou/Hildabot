@@ -10,6 +10,10 @@ struct Rank {
 };
 
 namespace rankutil {
+    static constexpr int rank_levels[] = {
+        1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300
+    };
+
     /// @brief Get the nearest minimum rank level for the specified level.
     /// @param level The level to get the rank level of.
     /// @return The minimum rank level for the level provided.

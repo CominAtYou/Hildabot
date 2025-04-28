@@ -20,10 +20,6 @@ static std::map<int, Rank> rank_map = {
     {280, Rank("Frida", 280, 644369526129033217ULL)}, {300, Rank("Hilda", 300, 644369712108666903ULL)}
 };
 
-static constexpr int rank_levels[] = {
-    1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300
-};
-
 namespace rankutil {
     /// @brief Get the nearest minimum rank level for the specified level.
     /// @param level The level to get the rank level of.
