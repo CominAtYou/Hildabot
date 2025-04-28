@@ -9,23 +9,12 @@
 #include "xp/xp_system_calculator.h"
 #include "rank/rank_util.h"
 #include "constants.h"
+#include "util/owner.h"
 
 namespace commands {
     namespace stats {
         dpp::task<void> execute(const dpp::message_create_t& event, const std::vector<std::string>& args) {
-            if (event.msg.channel_id != BOT_CHANNEL_ID) {
-                auto callback = co_await event.owner->co_current_application_get();
-
-                if (callback.is_error()) {
-                    co_return;
-                }
-
-                dpp::application app = callback.get<dpp::application>();
-
-                if (event.msg.author.id != app.owner.id) {
-                    co_return;
-                }
-            }
+            if (event.msg.channel_id != BOT_CHANNEL_ID && (co_await util::get_owner_id(*event.owner)) != event.msg.author.id) co_return;
 
             dpp::snowflake id;
             dpp::user user;

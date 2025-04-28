@@ -12,6 +12,7 @@
 #include "constants.h"
 #include "logging/logging.h"
 #include "rank/rank_util.h"
+#include "util/owner.h"
 
 const std::vector<dpp::snowflake> ignored_channels = { dpp::snowflake{ 495034452422950915L } };
 
@@ -95,19 +96,15 @@ namespace xp {
             if (callback.is_error()) {
                 co_await logging::error(event.owner, "LevelAlert", "Failed to assign {} to {} ({})!", rank.name, user.username, user.id.str());
 
-                auto callback = co_await event.owner->co_current_application_get();
-                if (callback.is_error()) {
-                    // something is seriously wrong
+                auto owner_id_opt = co_await util::get_owner_id(*event.owner);
+                if (!owner_id_opt.has_value()) {
                     co_return;
                 }
-
-                dpp::application app = callback.get<dpp::application>();
-                const dpp::snowflake owner_id = app.owner.id;
 
                 dpp::message message;
                 message.add_embed(embed);
 
-                co_await event.owner->co_direct_message_create(owner_id, message);
+                co_await event.owner->co_direct_message_create(*owner_id_opt, message);
                 co_return;
             }
 
@@ -118,19 +115,16 @@ namespace xp {
             if (edit_callback.is_error()) {
                 co_await logging::error(event.owner, "LevelAlert", "Failed to assign {} to {} ({})!", rank.name, user.username, user.id.str());
 
-                auto callback = co_await event.owner->co_current_application_get();
-                if (callback.is_error()) {
-                    // something is seriously wrong
+                auto owner_id_opt = co_await util::get_owner_id(*event.owner);
+                if (!owner_id_opt.has_value()) {
                     co_return;
                 }
-
-                dpp::application app = callback.get<dpp::application>();
-                const dpp::snowflake owner_id = app.owner.id;
 
                 dpp::message message;
                 message.add_embed(embed);
 
-                co_await event.owner->co_direct_message_create(owner_id, message);
+                co_await event.owner->co_direct_message_create(*owner_id_opt, message);
+                co_return;
             }
         }
         else {
