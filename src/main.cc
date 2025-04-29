@@ -3,6 +3,7 @@
 #include "event_handlers/message_create.h"
 #include <iostream>
 #include "constants.h"
+#include "activities/activity_swapper.h"
 
 int main() {
     dpp::cluster bot(BOT_TOKEN);
@@ -18,6 +19,8 @@ int main() {
 
     bot.on_ready([&bot](auto event) {
         std::cout << "Logged in as " << bot.me.format_username() << "\n";
+
+        activity_swapper::start(event.owner);
     });
 
     bot.on_message_create([](const dpp::message_create_t& event) -> dpp::task<void> {
