@@ -5,8 +5,12 @@
 #include <stdexcept>
 
 static std::map<int, Rank> rank_map = {
-    {1, Rank("Time Worm", 1, 505141598946852885ULL)}, {5, Rank("Nitten", 5, 492871026640814090ULL)},
-    {10, Rank("Tide Mouse", 10, 587846293091778560ULL)}, {15, Rank("Elf", 15, 644366736581459998ULL)},
+    #ifdef DEBUG
+    {1, Rank("Time Worm", 1, 936499728970043453ULL)}, {5, Rank("Nitten", 5, 936499765569548308ULL)}, {10, Rank("Tide Mouse", 10, 936499819290177556ULL)},
+    #else
+    {1, Rank("Time Worm", 1, 505141598946852885ULL)}, {5, Rank("Nitten", 5, 492871026640814090ULL)}, {10, Rank("Tide Mouse", 10, 587846293091778560ULL)},
+    #endif
+    {15, Rank("Elf", 15, 644366736581459998ULL)},
     {20, Rank("Twig", 20, 492870780770713602ULL)}, {25, Rank("Woff", 25, 644366895231008788ULL)},
     {30, Rank("Vittra", 30, 644367091683688488ULL)}, {35, Rank("Nisse", 35, 587994460520972288ULL)},
     {40, Rank("Forest Giant", 40, 492871177648472077ULL)}, {45, Rank("Troll", 45, 644367516604432384ULL)},
