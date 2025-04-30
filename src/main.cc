@@ -4,6 +4,7 @@
 #include <iostream>
 #include "constants.h"
 #include "activities/activity_swapper.h"
+#include "slashcommands/slash_command_processor.h"
 
 int main() {
     dpp::cluster bot(BOT_TOKEN);
@@ -25,6 +26,10 @@ int main() {
 
     bot.on_message_create([](const dpp::message_create_t& event) -> dpp::task<void> {
         co_await events::handle_message_create(event);
+    });
+
+    bot.on_slashcommand([](const dpp::slashcommand_t& event) -> dpp::task<void> {
+        co_await slash_commands::run_command(event);
     });
 
     bot.start(dpp::st_wait);
