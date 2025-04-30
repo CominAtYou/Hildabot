@@ -40,8 +40,7 @@ class UserEntry {
         int get_recent_message_count();
         void increment_recent_message_count();
 
-        void get_birthday(); // TODO: determine the type for this
-        void set_birthday(const int month, const int day);
+        std::optional<std::pair<int, int>> get_birthday();
 
         // submit boosts?
         std::optional<std::vector<double>> get_submit_boosts();

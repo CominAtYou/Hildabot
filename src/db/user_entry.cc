@@ -45,7 +45,10 @@ void UserEntry::create_entry_if_not_present(const std::string user_id) {
                 kvp("count", 0),
                 kvp("resets_at", DB_NULL)
             )),
-            kvp("birthday", make_document()),
+            kvp("birthday", make_document(
+                kvp("month", DB_NULL),
+                kvp("day", DB_NULL)
+            )),
             kvp("items", make_document()),
             kvp("times_submitted", 0),
             kvp("latest_submission_id", DB_NULL),
@@ -279,18 +282,17 @@ inline void UserEntry::reset_recent_message_count() {
     );
 }
 
-void UserEntry::get_birthday() {
-    // todo
-}
+std::optional<std::pair<int, int>> UserEntry::get_birthday() {
+    auto doc = get_user_document();
+    auto birthday = doc["birthday"].get_document().view();
+    auto month = birthday["month"];
+    auto day = birthday["day"];
 
-void UserEntry::set_birthday(const int month, const int day) {
-    auto& db = MongoDatabase::get_database();
-    db["users"].update_one(
-        make_document(kvp("_id", user_id)),
-        make_document(kvp("$set", make_document(kvp("birthday", make_document(
-            kvp("month", month),
-            kvp("day", day)
-        ))))));
+    if (month.type() == bsoncxx::type::k_null || day.type() == bsoncxx::type::k_null) {
+        return std::nullopt;
+    }
+
+    return std::make_pair(month.get_int32(), day.get_int32());
 }
 
 std::optional<std::vector<double>> UserEntry::get_submit_boosts() {
