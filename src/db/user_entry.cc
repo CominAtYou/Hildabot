@@ -56,7 +56,8 @@ void UserEntry::create_entry_if_not_present(const std::string user_id) {
             kvp("high_score", 0),
             kvp("xp", 0),
             kvp("last_submitted_at", DB_NULL),
-            kvp("level_alerts_disabled", false)
+            kvp("level_alerts_disabled", false),
+            kvp("version", UserEntry::version::VERSION_1)
         ));
     }
 }
@@ -456,3 +457,7 @@ int UserEntry::get_level() {
     return xp::calculator::level_from_xp(xp);
 }
 
+UserEntry::version UserEntry::get_version() {
+    auto doc = get_user_document();
+    return static_cast<UserEntry::version>((int) doc["version"].get_int32());
+}
