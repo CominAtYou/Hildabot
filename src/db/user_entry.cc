@@ -403,14 +403,6 @@ bool UserEntry::get_streak_warnings_preference() {
     return !get_user_document()["streak_warnings_disabled"].get_bool();
 }
 
-void UserEntry::set_streak_warnings_preference(const bool state) {
-    auto& db = MongoDatabase::get_database();
-    db["users"].update_one(
-        make_document(kvp("_id", user_id)),
-        make_document(kvp("$set", make_document(kvp("streak_warnings_disabled", !state))))
-    );
-}
-
 int UserEntry::get_high_score() {
     return get_user_document()["high_score"].get_int32();
 }
@@ -441,14 +433,6 @@ bool UserEntry::has_submitted_today() {
 
 bool UserEntry::get_level_alerts_preference() {
     return !get_user_document()["level_alerts_disabled"].get_bool();
-}
-
-void UserEntry::set_level_alerts_preference(const bool state) {
-    auto& db = MongoDatabase::get_database();
-    db["users"].update_one(
-        make_document(kvp("_id", user_id)),
-        make_document(kvp("$set", make_document(kvp("level_alerts_disabled", !state))))
-    );
 }
 
 int UserEntry::get_level() {

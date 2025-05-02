@@ -58,7 +58,6 @@ class UserEntry {
         std::optional<dpp::snowflake> get_latest_submission_id();
 
         bool get_streak_warnings_preference();
-        void set_streak_warnings_preference(bool state);
 
         int get_high_score();
 
@@ -68,7 +67,6 @@ class UserEntry {
         bool has_submitted_today();
 
         bool get_level_alerts_preference();
-        void set_level_alerts_preference(bool state);
 
         int get_level();
 
