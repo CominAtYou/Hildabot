@@ -9,6 +9,7 @@
 #include "submit.h"
 #include "birthday.h"
 #include "levelalert.h"
+#include "streakwarning.h"
 
 #include "staff/initialize_user.h"
 
@@ -23,7 +24,8 @@ static std::unordered_map<std::string, command_function> command_map = {
     {"birthday", commands::birthday::execute},
     {"inituser", commands::initialize_user::execute},
     {"setactivity", commands::set_activity::execute},
-    {"levelalert", commands::levelalert::execute}
+    {"levelalert", commands::levelalert::execute},
+    {"streakwarning", commands::streakwarning::execute},
 };
 
 namespace commands {
