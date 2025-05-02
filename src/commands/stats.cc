@@ -25,11 +25,7 @@ namespace commands {
             }
             else {
                 if (!std::regex_match(args[0], std::regex("^[0-9]{17,19}$"))) {
-                    dpp::message reply = dpp::message{}
-                        .set_content("Please provide a valid user ID.")
-                        .set_channel_id(event.msg.channel_id);
-
-                    co_await event.owner->co_message_create(reply);
+                    co_await event.co_send("Please provide a valid user ID.");
                     co_return;
                 }
 
@@ -51,11 +47,7 @@ namespace commands {
                 auto member = co_await event.owner->co_guild_get_member(BASE_GUILD_ID, id);
 
                 if (member.is_error()) {
-                    dpp::message reply = dpp::message{}
-                        .set_content("That ID doesn't seem to belong to anyone here.")
-                        .set_channel_id(event.msg.channel_id);
-
-                    co_await event.owner->co_message_create(reply);
+                    co_await event.co_send("That ID doesn't seem to belong to anyone here.");
                     co_return;
                 }
 
@@ -103,11 +95,7 @@ namespace commands {
                 embed.add_field("Streak Expiry", std::format("<t:{}>", user_entry.get_streak_expiry().value()));
             }
 
-            dpp::message reply = dpp::message{}
-                .add_embed(embed)
-                .set_channel_id(event.msg.channel_id);
-
-            co_await event.owner->co_message_create(reply);
+            co_await event.co_send(dpp::message{}.add_embed(embed));
         }
     }
 }

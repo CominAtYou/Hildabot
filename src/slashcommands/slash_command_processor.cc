@@ -10,7 +10,6 @@ static std::unordered_map<std::string, slash_command_function> command_map = {
     {"birthday", slash_commands::birthday::execute}
 };
 
-
 namespace slash_commands {
     dpp::task<void> run_command(const dpp::slashcommand_t& event) {
         dpp::command_interaction interaction = event.command.get_command_interaction();

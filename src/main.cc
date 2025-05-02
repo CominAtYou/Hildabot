@@ -1,7 +1,7 @@
 #include <dpp/dpp.h>
+#include <iostream>
 #include "config.h"
 #include "event_handlers/message_create.h"
-#include <iostream>
 #include "constants.h"
 #include "activities/activity_swapper.h"
 #include "slashcommands/slash_command_processor.h"

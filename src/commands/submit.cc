@@ -23,11 +23,7 @@ namespace commands {
             UserEntry user(event.msg.author);
 
             if (user.has_submitted_today()) {
-                dpp::message reply = dpp::message{}
-                    .set_content(std::format("You've already submitted today! You can submit again <t:{}:R>.", util::midnight_tomorrow_seconds()))
-                    .set_channel_id(event.msg.channel_id);
-
-                co_await event.owner->co_message_create(reply);
+                co_await event.co_reply(std::format("You've already submitted today! You can submit again <t:{}:R>.", util::midnight_tomorrow_seconds()));
                 co_return;
             }
 
@@ -44,13 +40,7 @@ namespace commands {
 
             const std::regex pattern("https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|].*");
             if (!std::regex_match(submission_content, pattern) && event.msg.attachments.empty()) {
-                dpp::message reply = dpp::message{}
-                    .set_content("You need to provide something to submit!")
-                    .set_reference(event.msg.id)
-                    .set_allowed_mentions()
-                    .set_channel_id(event.msg.channel_id);
-
-                co_await event.owner->co_message_create(reply);
+                co_await event.co_reply("You need to provide something to submit!");
                 co_return;
             }
 
@@ -82,7 +72,7 @@ namespace commands {
                 .add_field("Streak Expiry", std::format("<t:{}>", streak_expiry), false)
                 .set_footer({ "Tokens can be used with the /store command." });
 
-            co_await event.owner->co_message_create(dpp::message{}.add_embed(embed).set_channel_id(event.msg.channel_id));
+            co_await event.co_send(dpp::message{}.add_embed(embed));
 
             co_await logging::event(event.owner, "Submit", "Successfully processed submission from {} ({}) in <#{}>. (Submission ID: {})",
                 event.msg.author.username, event.msg.author.id.str(), event.msg.channel_id.str(), event.msg.id.str());

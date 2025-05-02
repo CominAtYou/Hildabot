@@ -12,14 +12,14 @@ namespace commands {
             }
 
             if (args.empty()) {
-                co_await event.owner->co_message_create(dpp::message{event.msg.channel_id, "Please provide an argument."});
+                co_await event.co_send("Please provide an argument.");
                 co_return;
             }
 
             const std::string status = args[0];
             event.owner->set_presence(dpp::presence(dpp::ps_online, dpp::at_custom, status));
 
-            co_await event.owner->co_message_create(dpp::message{event.msg.channel_id, std::format("Set status to \"{}\"!", status)});
+            co_await event.co_send(std::format("Set status to \"{}\"!", status));
         }
     }
 }

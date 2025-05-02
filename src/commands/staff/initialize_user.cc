@@ -23,11 +23,7 @@ namespace commands {
             }
 
             if (args.size() < 2) {
-                dpp::message reply = dpp::message{}
-                    .set_content("A user ID and a level must be provided.")
-                    .set_channel_id(event.msg.channel_id);
-
-                co_await event.owner->co_message_create(reply);
+                co_await event.co_send("A user ID and a level must be provided.");
                 co_return;
             }
 
@@ -36,52 +32,32 @@ namespace commands {
                 level = std::stoi(args[1]);
             }
             catch (const std::invalid_argument&) {
-                dpp::message reply = dpp::message{}
-                    .set_content("Invalid level provided.")
-                    .set_channel_id(event.msg.channel_id);
-
                 // can't co_await inside of a catch block
-                event.owner->message_create(reply, [](const dpp::confirmation_callback_t& callback) {});
+                event.send("Invalid level provided.", [](const dpp::confirmation_callback_t& callback) {});
                 co_return;
             }
 
             if (level < 0) {
-                dpp::message reply = dpp::message{}
-                    .set_content("Level must be a positive number.")
-                    .set_channel_id(event.msg.channel_id);
-
-                co_await event.owner->co_message_create(reply);
+                co_await event.co_send("Level must be a positive number.");
                 co_return;
             }
 
             std::regex id_regex("^[0-9]{17,19}$");
             if (!std::regex_match(args[0], id_regex)) {
-                dpp::message reply = dpp::message{}
-                    .set_content("Invalid user ID provided.")
-                    .set_channel_id(event.msg.channel_id);
-
-                co_await event.owner->co_message_create(reply);
+                co_await event.co_send("Invalid user ID provided.");
                 co_return;
             }
 
             const dpp::snowflake user_id = std::stoull(args[0]);
 
             if (user_id == event.msg.author.id) {
-                dpp::message reply = dpp::message{}
-                    .set_content("You can't initialize yourself. That's cheating!")
-                    .set_channel_id(event.msg.channel_id);
-
-                co_await event.owner->co_message_create(reply);
+                co_await event.co_send("You can't initialize yourself. That's cheating!");
                 co_return;
             }
 
             auto callback = co_await event.owner->co_guild_get_member(BASE_GUILD_ID, user_id);
             if (callback.is_error()) {
-                dpp::message reply = dpp::message{}
-                    .set_content("Unable to locate a user in this server with the provided ID.")
-                    .set_channel_id(event.msg.channel_id);
-
-                co_await event.owner->co_message_create(reply);
+                co_await event.co_send("Unable to locate a user in this server with the provided ID.");
                 co_return;
             }
 
@@ -89,11 +65,7 @@ namespace commands {
 
             auto user_callback = co_await event.owner->co_user_get_cached(user_id);
             if (user_callback.is_error()) {
-                dpp::message reply = dpp::message{}
-                    .set_content("Unable to locate a user in this server with the provided ID.")
-                    .set_channel_id(event.msg.channel_id);
-
-                co_await event.owner->co_message_create(reply);
+                co_await event.co_send("Unable to locate a user in this server with the provided ID.");
                 co_return;
             }
 
@@ -103,11 +75,7 @@ namespace commands {
             const int current_level = user_entry.get_level();
 
             if (user_entry.get_xp() >= xp::calculator::minimum_xp_for_level(level)) {
-                dpp::message reply = dpp::message{}
-                    .set_content(std::format("The user specified already exceeds level {}. (They're currently level {})", level, current_level))
-                    .set_channel_id(event.msg.channel_id);
-
-                co_await event.owner->co_message_create(reply);
+                co_await event.co_send(std::format("The user specified already exceeds level {}. (They're currently level {})", level, current_level));
                 co_return;
             }
 
@@ -117,11 +85,7 @@ namespace commands {
                     .set_title("Hold up! You might have typed something wrong.")
                     .set_description(std::format("You're attempting to initialize <@{}>, but they're already level {}. **You may have specified the wrong user.**\n\nIf you're sure that this is the user you wanted, re-run your command with `--force` at the end.", user_id.str(), user_entry.get_level()));
 
-                    dpp::message warning_message = dpp::message{}
-                        .add_embed(warning_embed)
-                        .set_channel_id(event.msg.channel_id);
-
-                co_await event.owner->co_message_create(warning_message);
+                co_await event.co_send(dpp::message{}.add_embed(warning_embed));
                 co_return;
             }
 
@@ -150,11 +114,7 @@ namespace commands {
 
             auto update_callback = co_await event.owner->co_guild_edit_member(member);
             if (update_callback.is_error()) {
-                dpp::message reply = dpp::message{}
-                    .set_content("The user has been initialized, but there was an error when trying to update their roles. Ask them to run `h!levelcheck` to restore their roles.")
-                    .set_channel_id(event.msg.channel_id);
-
-                co_await event.owner->co_message_create(reply);
+                co_await event.co_send("The user has been initialized, but there was an error when trying to update their roles. Ask them to run `h!levelcheck` to restore their roles.");
             }
             else {
                 co_await event.owner->co_message_add_reaction(event.msg.id, event.msg.channel_id, "👍");

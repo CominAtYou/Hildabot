@@ -19,13 +19,7 @@ namespace commands {
             const dpp::user user = event.msg.author;
 
             if (user_entry.get_xp() < 290) {
-                dpp::message reply = dpp::message{}
-                    .set_content("You don't seem to be missing any roles, so you're all set!")
-                    .set_reference(event.msg.id)
-                    .set_channel_id(event.msg.channel_id)
-                    .set_allowed_mentions();
-
-                co_await event.owner->co_message_create(reply);
+                co_await event.co_reply("You don't seem to be missing any roles, so you're all set!");
                 co_return;
             }
 
@@ -50,23 +44,11 @@ namespace commands {
             if (restored_roles > 0) {
                 co_await event.owner->co_guild_edit_member(member);
 
-                dpp::message reply = dpp::message{}
-                    .set_content("You're all set. The roles you were missing have been added to you.")
-                    .set_reference(event.msg.id)
-                    .set_channel_id(event.msg.channel_id)
-                    .set_allowed_mentions();
-
-                co_await event.owner->co_message_create(reply);
+                co_await event.co_reply("You're all set. The roles you were missing have been added to you.");
                 co_await logging::event(event.owner, "LevelCheck", "Restored {} role(s) for {} ({})", restored_roles, user.username, user.id.str());
             }
             else {
-                dpp::message reply = dpp::message{}
-                    .set_content("You don't seem to be missing any roles, so you're all set!")
-                    .set_reference(event.msg.id)
-                    .set_channel_id(event.msg.channel_id)
-                    .set_allowed_mentions();
-
-                co_await event.owner->co_message_create(reply);
+                co_await event.co_reply("You don't seem to be missing any roles, so you're all set!");
             }
         }
     }
