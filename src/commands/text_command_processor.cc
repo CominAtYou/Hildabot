@@ -8,7 +8,10 @@
 #include "levelcheck.h"
 #include "submit.h"
 #include "birthday.h"
+#include "levelalert.h"
+
 #include "staff/initialize_user.h"
+
 #include "admin/set_activity.h"
 
 typedef std::function<dpp::task<void>(const dpp::message_create_t&, const std::vector<std::string>&)> command_function;
@@ -19,7 +22,8 @@ static std::unordered_map<std::string, command_function> command_map = {
     {"levelcheck", commands::levelcheck::execute},
     {"birthday", commands::birthday::execute},
     {"inituser", commands::initialize_user::execute},
-    {"setactivity", commands::set_activity::execute}
+    {"setactivity", commands::set_activity::execute},
+    {"levelalert", commands::levelalert::execute}
 };
 
 namespace commands {
