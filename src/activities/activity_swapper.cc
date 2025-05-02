@@ -1,12 +1,11 @@
 #include "activity_swapper.h"
 #include <dpp/dpp.h>
 #include <random>
-#include <vector>
 #include "scheduler/scheduler.h"
 
 static bool executed = false;
 
-static std::vector<dpp::presence> activities = {
+static const dpp::presence activities[] = {
     dpp::presence(dpp::ps_online, dpp::at_watching, "for your submissions!"),
     dpp::presence(dpp::ps_online, dpp::at_watching, "Frida practice magic"),
     dpp::presence(dpp::ps_online, dpp::at_watching, "Hilda and the Mountain King"),
@@ -25,20 +24,23 @@ static std::vector<dpp::presence> activities = {
 static Bosma::Scheduler scheduler(12U);
 
 namespace activity_swapper {
+    void swap_activity(dpp::cluster* bot) {
+        static std::random_device rd;
+        static std::mt19937 gen(rd());
+        static std::uniform_int_distribution<> dis(0, 13 - 1);
+
+        const int random_index = dis(gen);
+        const dpp::presence activity = activities[random_index];
+
+        bot->set_presence(activity);
+    }
+
     void start(dpp::cluster* bot) {
         if (!executed) {
             executed = true;
 
-            scheduler.every(std::chrono::minutes(10), [bot](std::vector<dpp::presence>* activities) {
-                static std::random_device rd;
-                static std::mt19937 gen(rd());
-                static std::uniform_int_distribution<> dis(0, activities->size() - 1);
-
-                const int random_index = dis(gen);
-                const dpp::presence activity = activities->at(random_index);
-
-                bot->set_presence(activity);
-            }, &activities);
+            swap_activity(bot);
+            scheduler.every(std::chrono::minutes(10), swap_activity, bot);
         }
     }
 }
