@@ -1,5 +1,4 @@
 #pragma once
-
 #include <dpp/dpp.h>
 
 namespace slash_commands {

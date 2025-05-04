@@ -5,16 +5,10 @@
 #include <format>
 #include "db/mongo_database.h"
 #include "db/user_entry.h"
+#include "birthday_constants.h"
 
 using bsoncxx::builder::basic::make_document;
 using bsoncxx::builder::basic::kvp;
-
-static constexpr int thirty_day_months[] = {4, 6, 9, 11};
-static constexpr int thirty_one_day_months[] = {1, 3, 5, 7, 8, 10, 12};
-static constexpr const char* month_names[] = {
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-};
 
 namespace slash_commands {
     namespace birthday {
@@ -64,8 +58,8 @@ namespace slash_commands {
                 )))))
             );
 
-            time_t now = time(nullptr);
-            tm* local_time = localtime(&now);
+            time_t now = std::time(nullptr);
+            tm* local_time = std::localtime(&now);
 
             int current_month = local_time->tm_mon + 1; // tm_mon is 0-based
             int current_day = local_time->tm_mday;
