@@ -66,23 +66,18 @@ namespace slash_commands {
 
             if (month == current_month && day == current_day) {
                 if (current_month == 2 && day == 29) {
-                    dpp::message reply = dpp::message{ "Happy birthday! Your birthday has been set to February 29. Your birthday will be announced on March 1 on non-leap years." };
-                    co_await event.co_reply(reply);
+                    co_await event.co_reply("Happy birthday! Your birthday has been set to February 29. Your birthday will be announced on March 1 on non-leap years.");
                 }
                 else {
-                    dpp::message reply = dpp::message{ std::format("Happy birthday! Your birthday has been set to {} {}.", month_names[month - 1], day) };
-                    co_await event.co_reply(reply);
+                    co_await event.co_reply(std::format("Happy birthday! Your birthday has been set to {} {}.", month_names[month - 1], day));
                 }
             }
             else if (month == 2 && day == 29) {
-                dpp::message reply = dpp::message{ "Success! Your birthday has been set to February 29. Your birthday will be announced on March 1 on non-leap years." };
-                co_await event.co_reply(reply);
+                co_await event.co_reply("Success! Your birthday has been set to February 29. Your birthday will be announced on March 1 on non-leap years.");
             }
             else {
-                dpp::message reply = dpp::message{ std::format("Success! Your birthday has been set to {} {}.", month_names[month - 1], day) };
-                co_await event.co_reply(reply);
+                co_await event.co_reply(std::format("Success! Your birthday has been set to {} {}.", month_names[month - 1], day));
             }
-
         }
     }
 }
