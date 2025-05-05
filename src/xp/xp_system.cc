@@ -39,18 +39,17 @@ namespace xp {
         // Increment the rate limit count.
         user.increment_recent_message_count();
 
-        co_await check_for_level_up(current_level, event);
+        co_await check_for_level_up(current_level, event.owner, event.msg.author, event.msg.member);
     }
 
-    dpp::task<void> check_for_level_up(const int before_action_level, const dpp::message_create_t& event) {
-        const dpp::user& user = event.msg.author;
+    dpp::task<void> check_for_level_up(const int before_action_level, dpp::cluster* bot, const dpp::user& user, dpp::guild_member member) {
         UserEntry user_entry(user);
         const int current_level = xp::calculator::level_from_xp(user_entry.get_xp());
 
         // Check if level up occurred.
         if (current_level <= before_action_level) co_return;
 
-        co_await logging::event(event.owner, "LevelUp", "{} ({}) leveled up to {}: {} XP", user.username, user.id.str(), current_level, user_entry.get_xp());
+        co_await logging::event(bot, "LevelUp", "{} ({}) leveled up to {}: {} XP", user.username, user.id.str(), current_level, user_entry.get_xp());
 
         const bool is_rank_level = rankutil::is_level_rank_level(current_level);
 
@@ -67,27 +66,25 @@ namespace xp {
             dpp::message message;
             message.add_embed(embed);
 
-            dpp::confirmation_callback_t callback = co_await event.owner->co_direct_message_create(user.id, message);
+            dpp::confirmation_callback_t callback = co_await bot->co_direct_message_create(user.id, message);
 
             if (callback.is_error()) {
-                co_await logging::error(event.owner, "LevelAlert", "Failed to send level up message to {}.\n{}", user.username, callback.get_error().message);
+                co_await logging::error(bot, "LevelAlert", "Failed to send level up message to {}.\n{}", user.username, callback.get_error().message);
             }
             else {
-                co_await logging::event(event.owner, "LevelAlert", "Sent level up message to {}.", user.username);
+                co_await logging::event(bot, "LevelAlert", "Sent level up message to {}.", user.username);
             }
         }
         else {
-            co_await logging::event(event.owner, "LevelAlert", "Not sending a message to {} as they have level alerts off.", user.username);
+            co_await logging::event(bot, "LevelAlert", "Not sending a message to {} as they have level alerts off.", user.username);
         }
 
         if (is_rank_level) {
             const Rank rank = rankutil::rank_from_level(current_level);
             user_entry.increment_tokens(40);
 
-            dpp::guild_member member = event.msg.member;
-
             member.add_role(rank.role_id);
-            dpp::confirmation_callback_t edit_callback = co_await event.owner->co_guild_edit_member(member);
+            dpp::confirmation_callback_t edit_callback = co_await bot->co_guild_edit_member(member);
 
             if (edit_callback.is_error()) {
                 dpp::embed embed = dpp::embed{}
@@ -97,9 +94,9 @@ namespace xp {
                     .add_field("Role", std::format("{} ({})", rank.name, rank.level), true)
                     .set_color(ERROR_RED);
 
-                co_await logging::error(event.owner, "LevelAlert", "Failed to assign {} to {} ({})!", rank.name, user.username, user.id.str());
+                co_await logging::error(bot, "LevelAlert", "Failed to assign {} to {} ({})!", rank.name, user.username, user.id.str());
 
-                auto owner_id_opt = co_await util::get_owner_id(event.owner);
+                auto owner_id_opt = co_await util::get_owner_id(bot);
                 if (!owner_id_opt.has_value()) {
                     co_return;
                 }
@@ -107,7 +104,7 @@ namespace xp {
                 dpp::message message;
                 message.add_embed(embed);
 
-                co_await event.owner->co_direct_message_create(*owner_id_opt, message);
+                co_await bot->co_direct_message_create(*owner_id_opt, message);
                 co_return;
             }
         }
