@@ -49,7 +49,10 @@ void UserEntry::create_entry_if_not_present(const std::string user_id) {
                 kvp("month", DB_NULL),
                 kvp("day", DB_NULL)
             )),
-            kvp("items", make_document()),
+            kvp("items", make_document(
+                kvp("inventory", make_array()),
+                kvp("submit_boosts", make_array())
+            )),
             kvp("times_submitted", 0),
             kvp("latest_submission_id", DB_NULL),
             kvp("streak_warnings_disabled", false),
