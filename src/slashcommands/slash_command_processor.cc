@@ -3,11 +3,13 @@
 #include <unordered_map>
 #include <string>
 #include "birthday/birthday.h"
+#include "stats.h"
 
 typedef std::function<dpp::task<void>(const dpp::slashcommand_t&)> slash_command_function;
 
 static std::unordered_map<std::string, slash_command_function> command_map = {
-    {"birthday", slash_commands::birthday::execute}
+    {"birthday", slash_commands::birthday::execute},
+    {"stats", slash_commands::stats::execute}
 };
 
 namespace slash_commands {
