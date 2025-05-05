@@ -1,5 +1,6 @@
 #include <dpp/dpp.h>
 #include "set_birthay.h"
+#include "list_birthday.h"
 
 namespace slash_commands {
     namespace birthday {
@@ -9,6 +10,9 @@ namespace slash_commands {
 
             if (subcommand.name == "set") {
                 co_await slash_commands::birthday::set(event);
+            }
+            else if (subcommand.name == "list") {
+                co_await slash_commands::birthday::list(event);
             }
         }
     }
