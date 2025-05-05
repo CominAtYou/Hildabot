@@ -18,7 +18,7 @@ int main() {
 
     // midnight tasks: birthdays, streak expiries, streak warnings
 
-    bot.on_ready([&bot](auto event) {
+    bot.on_ready([&bot](auto& event) {
         std::cout << "Logged in as " << bot.me.format_username() << "\n";
 
         activity_swapper::start(event.owner);
