@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <string>
 
 namespace util {
     /// @brief Get the number of seconds since the Unix epoch (1970-01-01).
@@ -19,5 +20,10 @@ namespace util {
     /// @param value The number to format.
     /// @return A string representation of the number with commas as thousands separators.
     template<typename T>
-    std::string format_with_commas(T value);
+    std::string format_with_commas(T value) {
+        std::stringstream ss;
+        ss.imbue(std::locale("en_US.UTF-8"));
+        ss << std::fixed << value;
+        return ss.str();
+    }
 }
