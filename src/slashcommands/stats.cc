@@ -4,6 +4,7 @@
 #include "xp/xp_system_calculator.h"
 #include "rank/rank_util.h"
 #include "constants.h"
+#include "util/helpers.h"
 
 namespace slash_commands {
     namespace stats {
@@ -44,11 +45,11 @@ namespace slash_commands {
                 .set_color(HILDA_BLUE)
                 .set_description(std::format("Level {} • {}", current_level, current_rank_name))
                 .add_field("Progress", progress_bar.str())
-                .add_field("XP", std::format("{}/{}", user_entry.get_xp() - xp::calculator::minimum_xp_for_level(current_level), xp_for_level_up), true)
-                .add_field("Streak", std::to_string(current_streak), true)
-                .add_field("High Score", std::to_string(high_score), true)
-                .add_field("Kudos", std::format("<:HildaStar:539313415425097728> **Given:** {} | <:HildaStar:539313415425097728> **Received:** {}", user_entry.get_kudos_given(), user_entry.get_kudos_received()))
-                .add_field("Stats", std::format("**Submits:** {} | **Tokens:** {}", user_entry.get_times_submitted(), user_entry.get_tokens()))
+                .add_field("XP", std::format("{}/{}", util::format_with_commas(user_entry.get_xp() - xp::calculator::minimum_xp_for_level(current_level)), util::format_with_commas(xp_for_level_up)), true)
+                .add_field("Streak", util::format_with_commas(current_streak), true)
+                .add_field("High Score", util::format_with_commas(high_score), true)
+                .add_field("Kudos", std::format("<:HildaStar:539313415425097728> **Given:** {} | <:HildaStar:539313415425097728> **Received:** {}", util::format_with_commas(user_entry.get_kudos_given()), util::format_with_commas(user_entry.get_kudos_received())))
+                .add_field("Stats", std::format("**Submits:** {} | **Tokens:** {}", util::format_with_commas(user_entry.get_times_submitted()), util::format_with_commas(user_entry.get_tokens())))
                 .add_field("Submit Status", user_entry.has_submitted_today() ? (event.command.usr.id == user.id ? ":white_check_mark: You have submitted today!" : ":white_check_mark: Submitted today!") : event.command.usr.id == user.id ? "You have not submitted today." : "Nothing yet today!");
 
             if (user_entry.get_streak_expiry().has_value()) {

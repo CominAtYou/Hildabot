@@ -78,9 +78,9 @@ namespace commands {
                 .set_author(dpp::embed_author({ event.msg.author.global_name, "", event.msg.author.get_avatar_url(0U, dpp::image_type::i_png, false) }))
                 .set_description("Your submission has been accepted!")
                 .set_color(SUCCESS_GREEN)
-                .add_field("Streak", std::to_string(new_streak), true)
-                .add_field("XP Gained", std::to_string(xp_amount) + (multiplier == 1 ? "" : std::format(" ({:.2f}x)", multiplier)), true)
-                .add_field("Tokens Received", std::format("30 (Total: {})", user.get_tokens()), true)
+                .add_field("Streak", util::format_with_commas(new_streak), true)
+                .add_field("XP Gained", util::format_with_commas(xp_amount) + (multiplier == 1 ? "" : std::format(" ({:.2f}x)", multiplier)), true)
+                .add_field("Tokens Received", std::format("30 (Total: {})", util::format_with_commas(user.get_tokens())), true)
                 .add_field("Streak Expiry", std::format("<t:{}>", streak_expiry), false)
                 .set_footer({ "Tokens can be used with the /store command." });
 
