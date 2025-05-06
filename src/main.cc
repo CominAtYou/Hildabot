@@ -17,8 +17,11 @@ int main() {
 
     bot.on_log(dpp::utility::cout_logger());
 
+    // todo:
     // midnight tasks: birthdays, streak expiries, streak warnings
     // member joins
+    // kudos tracking
+    // leaderboard command
 
     bot.on_ready([&bot](const dpp::ready_t& event) {
         std::cout << "Logged in as " << bot.me.format_username() << "\n";
@@ -28,6 +31,10 @@ int main() {
 
     bot.on_button_click([](const dpp::button_click_t& event) -> dpp::task<void> {
         co_await events::handle_button_click(event);
+    });
+
+    bot.on_message_create([](const dpp::message_create_t& event) -> dpp::task<void> {
+        co_await events::handle_message_create(event);
     });
 
     bot.on_slashcommand([](const dpp::slashcommand_t& event) -> dpp::task<void> {
