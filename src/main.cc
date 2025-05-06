@@ -2,6 +2,7 @@
 #include <iostream>
 #include "config.h"
 #include "event_handlers/message_create.h"
+#include "event_handlers/button_click.h"
 #include "constants.h"
 #include "activities/activity_swapper.h"
 #include "slashcommands/slash_command_processor.h"
@@ -17,15 +18,16 @@ int main() {
     bot.on_log(dpp::utility::cout_logger());
 
     // midnight tasks: birthdays, streak expiries, streak warnings
+    // member joins
 
-    bot.on_ready([&bot](auto& event) {
+    bot.on_ready([&bot](const dpp::ready_t& event) {
         std::cout << "Logged in as " << bot.me.format_username() << "\n";
 
         activity_swapper::start(event.owner);
     });
 
-    bot.on_message_create([](const dpp::message_create_t& event) -> dpp::task<void> {
-        co_await events::handle_message_create(event);
+    bot.on_button_click([](const dpp::button_click_t& event) -> dpp::task<void> {
+        co_await events::handle_button_click(event);
     });
 
     bot.on_slashcommand([](const dpp::slashcommand_t& event) -> dpp::task<void> {
