@@ -1,4 +1,7 @@
 #include <chrono>
+#include <string>
+#include <iomanip>
+#include <locale>
 
 namespace util {
     int64_t seconds_since_epoch() {
@@ -33,4 +36,11 @@ namespace util {
         return std::chrono::duration_cast<std::chrono::seconds>(next_week_midnight_zt.get_sys_time().time_since_epoch()).count();
     }
 
+    template<typename T>
+    std::string format_with_commas(T value) {
+        std::stringstream ss;
+        ss.imbue(std::locale("en_US.UTF-8"));
+        ss << std::fixed << value;
+        return ss.str();
+    }
 }
