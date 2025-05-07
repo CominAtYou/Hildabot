@@ -57,7 +57,8 @@ dpp::task<void> medium_submit_boost::give_item(const dpp::button_click_t& event)
         make_document(kvp("$push", make_document(
             kvp("items.submit_boosts", make_document(
                 kvp("$each", array)
-            )))))
+            ))))
+        )
     );
 
     co_await this->send_success_message(event, "Your next 3 submissions will be given a 10% increase in XP.");

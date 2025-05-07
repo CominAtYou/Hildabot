@@ -3,6 +3,7 @@
 #include "config.h"
 #include "event_handlers/message_create.h"
 #include "event_handlers/button_click.h"
+#include "event_handlers/kudos.h"
 #include "constants.h"
 #include "activities/activity_swapper.h"
 #include "slashcommands/slash_command_processor.h"
@@ -27,7 +28,6 @@ int main() {
 
     bot.on_ready([&bot](const dpp::ready_t& event) {
         std::cout << "Logged in as " << bot.me.format_username() << "\n";
-
         activity_swapper::start(event.owner);
     });
 
@@ -41,6 +41,14 @@ int main() {
 
     bot.on_slashcommand([](const dpp::slashcommand_t& event) -> dpp::task<void> {
         co_await slash_commands::run_command(event);
+    });
+
+    bot.on_message_reaction_add([](const dpp::message_reaction_add_t& event) -> dpp::task<void> {
+        co_await kudos::tally(event);
+    });
+
+    bot.on_message_reaction_remove([](const dpp::message_reaction_remove_t& event) -> dpp::task<void> {
+        co_await kudos::remove(event);
     });
 
     bot.start(dpp::st_wait);

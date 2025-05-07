@@ -24,6 +24,11 @@ UserEntry::UserEntry(const dpp::guild_member& member) {
     create_entry_if_not_present(this->user_id);
 }
 
+UserEntry::UserEntry(const dpp::snowflake& user_id) {
+    this->user_id = user_id.str();
+    create_entry_if_not_present(this->user_id);
+}
+
 void UserEntry::create_entry_if_not_present(const std::string user_id) {
     auto& db = MongoDatabase::get_database();
     auto result = db["users"].find_one(make_document(kvp("_id", user_id)));

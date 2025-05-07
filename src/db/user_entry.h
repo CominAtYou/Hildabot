@@ -23,6 +23,7 @@ class UserEntry {
     public:
         UserEntry(const dpp::user& user);
         UserEntry(const dpp::guild_member& member);
+        UserEntry(const dpp::snowflake& user_id);
 
         int get_kudos_received();
         void increment_kudos_received();
