@@ -23,6 +23,7 @@ int main() {
     // kudos tracking
     // leaderboard command
     // edit birthday command (API-side) to use integers instead of strings
+    // restore roles upon member join
 
     bot.on_ready([&bot](const dpp::ready_t& event) {
         std::cout << "Logged in as " << bot.me.format_username() << "\n";
