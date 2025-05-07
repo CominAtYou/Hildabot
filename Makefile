@@ -5,6 +5,7 @@ CXXFLAGS := -std=c++20 -Wall -Werror -Wpedantic \
 			 -I/usr/local/include/bsoncxx/v_noabi \
              -Isrc/include -Isrc
 LDFLAGS := -ldpp -lmongocxx -lbsoncxx -lssl -lcrypto -lz -pthread
+MAKEFLAGS += -j$(shell nproc)
 
 # ——— Project Layout ———
 SRCDIR   := src
