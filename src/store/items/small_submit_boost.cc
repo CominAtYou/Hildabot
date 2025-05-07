@@ -1,14 +1,18 @@
-#include "medium_submit_boost.h"
+#include "small_submit_boost.h"
 #include <dpp/dpp.h>
+#include <chrono>
 #include <bsoncxx/builder/basic/document.hpp>
 #include "db/user_entry.h"
 #include "db/mongo_database.h"
+#include "constants.h"
+#include "xp/xp_system.h"
+#include "util/helpers.h"
 
 using bsoncxx::builder::basic::make_document;
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_array;
 
-dpp::task<void> medium_submit_boost::give_item(const dpp::button_click_t& event) const {
+dpp::task<void> small_submit_boost::give_item(const dpp::button_click_t& event) const {
     UserEntry user_entry(event.command.usr);
 
     std::chrono::zoned_time zt{"America/Chicago", std::chrono::system_clock::now()};

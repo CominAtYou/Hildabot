@@ -3,6 +3,7 @@
 #include "util/helpers.h"
 #include "db/user_entry.h"
 #include "store/store.h"
+#include "logging/logging.h"
 
 namespace store {
     dpp::task<void> execute_purchase(const dpp::button_click_t& event) {
@@ -45,5 +46,6 @@ namespace store {
         }
 
         co_await item->give_item(event);
+        co_await logging::event(event.owner, "Store", "{} ({}) purchased {} for {} tokens.", event.command.usr.username, event.command.usr.id.str(), item->name, item->price);
     }
 }

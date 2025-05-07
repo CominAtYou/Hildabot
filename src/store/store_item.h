@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <dpp/dpp.h>
 
 enum purchase_limit {
     ONESHOT = -1,
@@ -11,6 +12,8 @@ enum purchase_limit {
 };
 
 class store_item {
+    protected:
+        dpp::task<void> send_success_message(const dpp::button_click_t& event, const std::string& message) const;
     public:
         std::string name;
         std::string description;
