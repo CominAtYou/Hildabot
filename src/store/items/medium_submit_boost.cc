@@ -50,7 +50,7 @@ dpp::task<void> medium_submit_boost::give_item(const dpp::button_click_t& event)
 
     user_entry.decrement_tokens(this->price);
 
-    auto array = make_array<double>(1.1, 1.1, 1.1);
+    auto array = make_array<double>(1.25, 1.25, 1.25);
 
     MongoDatabase::get_database()["users"].update_one(
         make_document(kvp("_id", event.command.usr.id.str())),
