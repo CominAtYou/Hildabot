@@ -1,7 +1,7 @@
 #include "activity_swapper.h"
 #include <dpp/dpp.h>
 #include <random>
-#include "scheduler/scheduler.h"
+#include "scheduler/instance.h"
 
 static bool executed = false;
 
@@ -20,8 +20,6 @@ static const dpp::presence activities[] = {
     dpp::presence(dpp::ps_online, dpp::at_listening, "a campfire story"),
     dpp::presence(dpp::ps_online, dpp::at_listening, "The Life of Hilda"),
 };
-
-static Bosma::Scheduler scheduler(12U);
 
 namespace activity_swapper {
     void swap_activity(dpp::cluster* bot) {
