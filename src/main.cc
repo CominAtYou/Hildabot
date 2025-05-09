@@ -1,5 +1,6 @@
 #include <dpp/dpp.h>
 #include <iostream>
+#include <csignal>
 #include "config.h"
 #include "event_handlers/message_create.h"
 #include "event_handlers/button_click.h"
@@ -7,9 +8,11 @@
 #include "constants.h"
 #include "activities/activity_swapper.h"
 #include "slashcommands/slash_command_processor.h"
+#include "routine_tasks/routine_tasks.h"
+
+static dpp::cluster bot(BOT_TOKEN);
 
 int main() {
-    dpp::cluster bot(BOT_TOKEN);
     bot.intents = dpp::i_default_intents | dpp::i_message_content | dpp::i_guild_members;
 
     #ifdef DEBUG
@@ -26,9 +29,16 @@ int main() {
     // edit birthday command (API-side) to use integers instead of strings
     // restore roles upon member join
 
-    bot.on_ready([&bot](const dpp::ready_t& event) {
+    bot.on_ready([](const dpp::ready_t& event) {
         std::cout << "Logged in as " << bot.me.format_username() << "\n";
         activity_swapper::start(event.owner);
+        routine_tasks::schedule(bot);
+
+        std::signal(SIGINT, [](int signal) {
+            std::cout << "Interrupt received, shutting down...\n";
+            bot.shutdown();
+            exit(0);
+        });
     });
 
     bot.on_button_click([](const dpp::button_click_t& event) -> dpp::task<void> {
