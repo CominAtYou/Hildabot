@@ -12,6 +12,10 @@ namespace util {
     /// @brief Get the number of seconds that represent midnight tomorrow in the local timezone.
     /// @return The number of seconds since the Unix epoch that represents midnight tomorrow in the local timezone.
     int64_t midnight_tomorrow_seconds();
+    /// @brief Get the number of seconds that represent midnight in a given number of days from now in the local timezone.
+    /// @param days The number of days from now.
+    /// @return The number of seconds since the Unix epoch that represents midnight in the given number of days from now in the local timezone.
+    int64_t midnight_seconds_in_days(const int days);
     /// @brief Get the number of seconds that represent midnight in a week from now in the local timezone.
     /// @return The number of seconds since the Unix epoch that represents midnight in a week from now in the local timezone.
     int64_t midnight_seconds_in_a_week();
