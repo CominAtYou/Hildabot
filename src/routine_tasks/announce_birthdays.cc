@@ -4,7 +4,10 @@
 #include <bsoncxx/builder/basic/document.hpp>
 #include <chrono>
 #include <format>
+#include <algorithm>
+#include <exception>
 #include <string>
+#include <optional>
 #include "db/mongo_database.h"
 #include "logging/logging.h"
 #include "constants.h"
@@ -13,29 +16,61 @@ using bsoncxx::builder::basic::make_document;
 using bsoncxx::builder::basic::kvp;
 
 namespace birthdays {
+    std::optional<dpp::guild_member> get_cached_guild_member(const dpp::cluster& bot, dpp::snowflake user_id) {
+        // find the guild in the cluster cache
+        auto* guild = dpp::get_guild_cache()->find(BASE_GUILD_ID);
+
+        if (guild == nullptr) {
+            return std::nullopt;
+        }
+
+        // find the member in that guild’s cache
+        dpp::members_container members = guild->members;
+
+        if (members.find(user_id) == members.end()) {
+            return std::nullopt;
+        }
+
+        return members[user_id];
+    }
+
     dpp::task<void> announce(dpp::cluster& bot) {
         co_await logging::event(&bot, "Birthdays", "Starting birthdays task.");
 
-        auto callback = co_await bot.co_roles_get(BASE_GUILD_ID);
+        std::chrono::zoned_time zt{"America/Chicago", std::chrono::system_clock::now()};
+        // get yesterday's date
+        auto yesterday = zt.get_local_time() - std::chrono::days(1);
+        std::chrono::year_month_day yesterday_ymd = std::chrono::year_month_day(std::chrono::floor<std::chrono::days>(yesterday));
+        uint32_t yesterday_month = static_cast<uint32_t>(yesterday_ymd.month());
+        uint32_t yesterday_day = static_cast<uint32_t>(yesterday_ymd.day());
 
-        if (callback.is_error()) {
-            co_await logging::error(&bot, "Birthdays", "Failed to get roles: {}", callback.get_error().human_readable);
-            co_return;
-        }
+        // get all user's with yesterday's birthday
+        auto yesterday_cursor = MongoDatabase::get_database()["users"].find(
+            make_document(kvp("birthday.month", (int) yesterday_month), kvp("birthday.day", (int) yesterday_day))
+        );
 
-        dpp::role_map roles = callback.get<dpp::role_map>();
+        for (auto& doc : yesterday_cursor) {
+            std::string_view user_id = doc["_id"].get_string();
 
-        dpp::role role = roles[BIRTHDAY_ROLE_ID];
-        dpp::members_container role_members = role.get_members();
+            std::optional<dpp::guild_member> member_opt = get_cached_guild_member(bot, user_id);
+            dpp::guild_member member;
 
-        for (auto& it : role_members) {
-            dpp::guild_member member = it.second;
-            member.remove_role(0LL);
+            if (!member_opt) {
+                auto member_callback = co_await bot.co_guild_get_member(BASE_GUILD_ID, user_id);
+                if (member_callback.is_error()) continue; // skip users not in the guild
+                member = member_callback.get<dpp::guild_member>();
+            }
+            else {
+                member = member_opt.value();
+            }
+
+            const std::vector<dpp::snowflake>& roles = member.get_roles();
+
+            if (std::find(roles.begin(), roles.end(), BIRTHDAY_ROLE_ID) == roles.end()) continue;
+
+            member.remove_role(BIRTHDAY_ROLE_ID);
             co_await bot.co_guild_edit_member(member);
         }
-
-        // get current month and day
-        std::chrono::zoned_time zt{"America/Chicago", std::chrono::system_clock::now()};
 
         auto local_time = zt.get_local_time();
         std::chrono::year_month_day ymd = std::chrono::year_month_day(std::chrono::floor<std::chrono::days>(local_time));
@@ -47,17 +82,16 @@ namespace birthdays {
             make_document(kvp("birthday.month", (int) month), kvp("birthday.day", (int) day))
         );
 
-        std::vector<dpp::guild_member> birthday_members(10);
+        std::vector<dpp::guild_member> birthday_members;
 
         for (auto& doc : cursor) {
             std::string_view user_id = doc["_id"].get_string();
 
-            try {
-                dpp::guild_member member = dpp::find_guild_member(BASE_GUILD_ID, user_id);
-                birthday_members.push_back(member);
+            std::optional<dpp::guild_member> member_opt = get_cached_guild_member(bot, user_id);
+            if (member_opt) {
+                birthday_members.push_back(member_opt.value());
                 continue;
             }
-            catch (const dpp::cache_exception& e) {}
 
             auto member_callback = co_await bot.co_guild_get_member(BASE_GUILD_ID, user_id);
 
@@ -66,8 +100,6 @@ namespace birthdays {
             auto member = member_callback.get<dpp::guild_member>();
             birthday_members.push_back(member);
         }
-
-        if (birthday_members.empty()) co_return;
 
         if (birthday_members.size() == 1) {
             dpp::message message(std::format("Hey <@{}>! I just wanted to wish you the happiest of birthdays! Can I have a slice of cake too? :birthday: :heart:", birthday_members[0].get_user()->id.str()));
@@ -89,7 +121,7 @@ namespace birthdays {
                 co_await logging::error(&bot, "Birthdays", "Failed to send birthday message: {}", message_callback.get_error().human_readable);
             }
         }
-        else {
+        else if (birthday_members.size() > 2) {
             std::ostringstream stream;
             stream << "Hey";
 
