@@ -38,7 +38,6 @@ class UserEntry {
         void decrement_tokens(const int amount);
 
         std::optional<int64_t> get_streak_expiry();
-        void reset_streak_expiry();
 
         int get_streak();
         std::pair<int, int64_t> process_submission(const dpp::snowflake& submission_id);

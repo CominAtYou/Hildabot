@@ -148,21 +148,19 @@ std::optional<int64_t> UserEntry::get_streak_expiry() {
 
     if (value <= util::seconds_since_epoch()) {
         // If the expiry is in the past, reset the streak expiry
-        reset_streak_expiry();
+        MongoDatabase::get_database()["users"].update_one(
+            make_document(kvp("_id", user_id)),
+            make_document(kvp("$set", make_document(
+                kvp("streak", make_document(
+                    kvp("count", 0),
+                    kvp("expiry", DB_NULL)
+                )
+            ))))
+        );
         return std::nullopt;
     }
 
     return value;
-}
-
-void UserEntry::reset_streak_expiry() {
-    auto& db = MongoDatabase::get_database();
-    db["users"].update_one(
-        make_document(kvp("_id", user_id)),
-        make_document(kvp("$set", make_document(
-            kvp("streak.expiry", DB_NULL)
-        )))
-    );
 }
 
 int UserEntry::get_streak() {
@@ -170,7 +168,15 @@ int UserEntry::get_streak() {
 
     if (expiry.has_value() && expiry <= util::seconds_since_epoch()) {
         // If the streak has expired, reset it
-        reset_streak();
+        MongoDatabase::get_database()["users"].update_one(
+            make_document(kvp("_id", user_id)),
+            make_document(kvp("$set", make_document(
+                kvp("streak", make_document(
+                    kvp("count", 0),
+                    kvp("expiry", DB_NULL)
+                )
+            ))))
+        );
         return 0;
     }
 
@@ -218,19 +224,6 @@ std::pair<int, int64_t> UserEntry::process_submission(const dpp::snowflake& subm
     }
 
     return {new_streak, week_after_now};
-}
-
-void UserEntry::reset_streak() {
-    auto& db = MongoDatabase::get_database();
-    db["users"].update_one(
-        make_document(kvp("_id", user_id)),
-        make_document(kvp("$set", make_document(kvp("streak",
-            make_document(
-                kvp("count", 0),
-                kvp("expiry", DB_NULL)
-            )
-        ))))
-    );
 }
 
 int UserEntry::get_recent_message_count() {
