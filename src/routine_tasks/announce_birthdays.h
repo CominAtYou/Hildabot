@@ -1,6 +1,6 @@
 #pragma once
 #include <dpp/dpp.h>
 
-namespace birthdays {
-    dpp::task<void> announce(dpp::cluster& bot);
+namespace routine_tasks {
+    dpp::task<void> announce_birthdays(dpp::cluster& bot);
 }

@@ -9,7 +9,7 @@
 
 namespace logging {
     template<typename... Args>
-    dpp::task<void> event(dpp::cluster* bot, const char* event_name, std::format_string<Args...> fmt, Args&&... args) {
+    dpp::task<void> event(const dpp::cluster* bot, const char* event_name, std::format_string<Args...> fmt, Args&&... args) {
         // get date and time in yyyy-MM-dd HH:mm:ss format
 
         auto now = std::chrono::system_clock::now();
@@ -30,7 +30,7 @@ namespace logging {
     }
 
     template<typename... Args>
-    dpp::task<void> error(dpp::cluster* bot, const char* event_name, std::format_string<Args...> fmt,  Args&&... args) {
+    dpp::task<void> error(const dpp::cluster* bot, const char* event_name, std::format_string<Args...> fmt,  Args&&... args) {
         // get date and time in yyyy-MM-dd HH:mm:ss format
         auto now = std::chrono::system_clock::now();
         const std::time_t now_time = std::chrono::system_clock::to_time_t(now);

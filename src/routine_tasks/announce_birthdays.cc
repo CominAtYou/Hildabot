@@ -15,8 +15,8 @@
 using bsoncxx::builder::basic::make_document;
 using bsoncxx::builder::basic::kvp;
 
-namespace birthdays {
-    std::optional<dpp::guild_member> get_cached_guild_member(const dpp::cluster& bot, dpp::snowflake user_id) {
+namespace routine_tasks {
+    std::optional<dpp::guild_member> get_cached_guild_member(const dpp::cluster& bot, const dpp::snowflake user_id) {
         // find the guild in the cluster cache
         auto* guild = dpp::get_guild_cache()->find(BASE_GUILD_ID);
 
@@ -34,7 +34,7 @@ namespace birthdays {
         return members[user_id];
     }
 
-    dpp::task<void> announce(dpp::cluster& bot) {
+    dpp::task<void> announce_birthdays(dpp::cluster& bot) {
         co_await logging::event(&bot, "Birthdays", "Starting birthdays task.");
 
         std::chrono::zoned_time zt{"America/Chicago", std::chrono::system_clock::now()};
@@ -44,7 +44,7 @@ namespace birthdays {
         uint32_t yesterday_month = static_cast<uint32_t>(yesterday_ymd.month());
         uint32_t yesterday_day = static_cast<uint32_t>(yesterday_ymd.day());
 
-        // get all user's with yesterday's birthday
+        // get all users with yesterday's birthday
         auto yesterday_cursor = MongoDatabase::get_database()["users"].find(
             make_document(kvp("birthday.month", (int) yesterday_month), kvp("birthday.day", (int) yesterday_day))
         );

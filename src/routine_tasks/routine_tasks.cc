@@ -7,7 +7,7 @@
 namespace routine_tasks {
     void schedule(dpp::cluster& bot) {
         scheduler.cron("0 0 * * *", [&bot]() -> dpp::task<void> {
-            co_await birthdays::announce(bot);
+            co_await announce_birthdays(bot);
         });
 
         scheduler.cron("0 0 * * *", [&bot]() -> dpp::task<void> {
