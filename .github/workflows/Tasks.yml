@@ -1,0 +1,46 @@
+name: Commit Tasks
+
+on:
+    push:
+        paths:
+            - '**.cc'
+            - '**.h'
+    pull_request_target:
+        paths:
+            - '**.cc'
+            - '**.h'
+    workflow_dispatch:
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Install zlib
+              run: |
+                sudo apt-get update
+                sudo apt-get install -y zlib1g-dev
+            - name: Install D++
+              run: |
+                curl -o dpp.deb https://dl.dpp.dev
+                sudo dpkg -i dpp.deb
+            - name: Install mongocxx
+              run: |
+                curl -OL https://github.com/mongodb/mongo-cxx-driver/releases/download/r4.1.0/mongo-cxx-driver-r4.1.0.tar.gz
+                tar -xzf mongo-cxx-driver-r4.1.0.tar.gz
+                cd mongo-cxx-driver-r4.1.0/build
+                cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=20
+                cmake --build .
+                sudo cmake --build . --target install
+            - name: Set up Workspace
+              run: |
+                cat <<EOF > $GITHUB_WORKSPACE/src/include/config.h
+                #pragma once
+                #define BOT_TOKEN ""
+                #define MONGO_URI ""
+                #define PREFIX "h!"
+                EOF
+            - name: Build
+              run: |
+                make
+
