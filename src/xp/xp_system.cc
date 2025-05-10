@@ -61,7 +61,7 @@ namespace xp {
             dpp::embed embed = dpp::embed{}
                 .set_color(HILDA_BLUE)
                 .set_title(embed_title)
-                .set_description("To disable this message going forward, run `h!levelalert` in this DM or <#495034452422950915>.");
+                .set_description(std::format("To disable this message going forward, run `h!levelalert` in this DM or <#{}>.", BOT_CHANNEL_ID));
 
             dpp::message message;
             message.add_embed(embed);
