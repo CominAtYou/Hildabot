@@ -16,10 +16,10 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
-            - name: Install zlib
+            - name: Install Library Dependencies
               run: |
                 sudo apt-get update
-                sudo apt-get install -y zlib1g-dev
+                sudo apt-get install -y zlib1g-dev libopus-dev
             - name: Install D++
               run: |
                 curl -o dpp.deb https://dl.dpp.dev
