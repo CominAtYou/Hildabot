@@ -5,7 +5,7 @@
 #include "event_handlers/message_create.h"
 #include "event_handlers/button_click.h"
 #include "event_handlers/kudos.h"
-#include "constants.h"
+#include "event_handlers/guild_member_update.h"
 #include "activities/activity_swapper.h"
 #include "slashcommands/slash_command_processor.h"
 #include "routine_tasks/routine_tasks.h"

@@ -1,8 +1,6 @@
 #include "kudos.h"
 #include <dpp/dpp.h>
 #include "db/user_entry.h"
-#include "constants.h"
-
 namespace kudos {
     dpp::task<void> tally(const dpp::message_reaction_add_t& event) {
         if (event.reacting_emoji.id != 539313415425097728ULL) co_return;
