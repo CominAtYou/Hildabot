@@ -1,5 +1,5 @@
 #include <dpp/dpp.h>
-#include "set_birthay.h"
+#include "set_birthday.h"
 #include "list_birthday.h"
 
 namespace slash_commands {

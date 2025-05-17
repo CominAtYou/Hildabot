@@ -1,3 +1,4 @@
+#include "set_birthday.h"
 #include <dpp/dpp.h>
 #include <algorithm>
 #include <bsoncxx/builder/basic/document.hpp>
