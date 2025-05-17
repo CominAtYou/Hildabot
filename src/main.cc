@@ -61,6 +61,10 @@ int main() {
         co_await kudos::remove(event);
     });
 
+    bot.on_guild_member_update([](const dpp::guild_member_update_t& event) -> dpp::task<void> {
+        co_await guild_member_update::handle(event);
+    });
+
     bot.start(dpp::st_wait);
 }
 
