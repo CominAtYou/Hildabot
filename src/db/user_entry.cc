@@ -44,7 +44,7 @@ void UserEntry::create_entry_if_not_present(const std::string user_id) {
                 kvp("expiry", DB_NULL),
                 kvp("count", 0)
             )),
-            kvp("recentmessages", make_document(
+            kvp("recent_messages", make_document(
                 kvp("count", 0),
                 kvp("resets_at", DB_NULL)
             )),
@@ -61,7 +61,6 @@ void UserEntry::create_entry_if_not_present(const std::string user_id) {
             kvp("streak_warnings_disabled", false),
             kvp("high_score", 0),
             kvp("xp", 0),
-            kvp("last_submitted_at", DB_NULL),
             kvp("level_alerts_disabled", false),
             kvp("version", UserEntry::version::VERSION_1)
         ));
@@ -194,11 +193,6 @@ std::pair<int, int64_t> UserEntry::process_submission(const dpp::snowflake& subm
     db["users"].update_one(
         make_document(kvp("_id", user_id)),
         make_document(kvp("$set", make_document(kvp("streak.expiry", week_after_now))))
-    );
-
-    db["users"].update_one(
-        make_document(kvp("_id", user_id)),
-        make_document(kvp("$set", make_document(kvp("last_submitted_at", util::seconds_since_epoch()))))
     );
 
     db["users"].update_one(
@@ -422,12 +416,13 @@ bool UserEntry::has_submitted_today() {
     int midnight_today = util::midnight_today_seconds();
     auto doc = get_user_document();
 
-    if (doc["last_submitted_at"].type() == bsoncxx::type::k_null) {
+    if (doc["latest_submission_id"].type() == bsoncxx::type::k_null) {
         return false; // No submission today
     }
 
-    int64_t last_submitted_at = doc["last_submitted_at"].get_int64();
-    return last_submitted_at >= midnight_today;
+    dpp::snowflake submission_id(doc["latest_submission_id"].get_int64().value);
+
+    return submission_id.get_creation_time() >= midnight_today;
 }
 
 bool UserEntry::get_level_alerts_preference() {
