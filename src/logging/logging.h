@@ -23,7 +23,7 @@ namespace logging {
         std::cout << log_message << '\n';
 
         dpp::message message;
-        message.set_content(log_message);
+        message.set_content(formatted_log);
         message.set_channel_id(LOG_CHANNEL_ID);
 
         co_await bot->co_message_create(message);
