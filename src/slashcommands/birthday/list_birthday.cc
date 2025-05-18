@@ -6,6 +6,8 @@
 #include <iterator>
 #include <format>
 #include <algorithm>
+#include <vector>
+#include <utility>
 #include "constants.h"
 #include "birthday_constants.h"
 #include "util/helpers.h"
@@ -46,10 +48,7 @@ namespace slash_commands {
                 co_return;
             }
 
-            dpp::embed embed = dpp::embed{}
-                .set_color(HILDA_BLUE)
-                .set_title(":birthday: Birthdays for " + std::string(month_names[month - 1]))
-                .set_footer(std::format("Birthdays in {}: {}", month_string, results.size()), "");
+            std::vector<std::pair<dpp::guild_member, int>> birthday_members;
 
             for (size_t i = 0; i < results.size(); i++) {
                 auto user_id = results[i]["_id"].get_string().value;
@@ -68,11 +67,23 @@ namespace slash_commands {
                     member = member_opt.value();
                 }
 
+                birthday_members.push_back(std::make_pair(member, day));
+            }
+
+            dpp::embed embed = dpp::embed{}
+                .set_color(HILDA_BLUE)
+                .set_title(":birthday: Birthdays for " + std::string(month_names[month - 1]))
+                .set_footer(std::format("Birthdays in {}: {}", month_string, birthday_members.size()), "");
+
+            for (size_t i = 0; i < birthday_members.size(); i++) {
+                dpp::guild_member member = birthday_members[i].first;
+                int day = birthday_members[i].second;
+
                 if (i == 18) {
-                    if (results.size() > 19) {
+                    if (birthday_members.size() > 19) {
                         const bool is_thirty_day_month = std::find(std::begin(thirty_day_months), std::end(thirty_day_months), month) != std::end(thirty_day_months);
                         const int day_count = month == 2 ? 29 : (is_thirty_day_month ? 30 : 31);
-                        embed.add_field(std::format("{} more", results.size() - 18), std::format("up to {} {}", shortened_month_string, day_count));
+                        embed.add_field(std::format("{} more", birthday_members.size() - 18), std::format("up to {} {}", shortened_month_string, day_count));
                     }
                     break;
                 }
