@@ -6,6 +6,7 @@
 #include "event_handlers/button_click.h"
 #include "event_handlers/kudos.h"
 #include "event_handlers/guild_member_update.h"
+#include "event_handlers/guild_member_add.h"
 #include "activities/activity_swapper.h"
 #include "slashcommands/slash_command_processor.h"
 #include "routine_tasks/routine_tasks.h"
@@ -60,6 +61,8 @@ int main() {
     bot.on_message_reaction_remove([](const dpp::message_reaction_remove_t& event) -> dpp::task<void> {
         co_await kudos::remove(event);
     });
+
+    bot.on_guild_member_add(guild_member_add::handle);
 
     bot.on_guild_member_update([](const dpp::guild_member_update_t& event) -> dpp::task<void> {
         co_await guild_member_update::handle(event);
