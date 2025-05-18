@@ -6,6 +6,7 @@
 #include <format>
 #include "db/user_entry.h"
 #include "db/mongo_database.h"
+#include "util/helpers.h"
 #include "constants.h"
 #include "util/owner.h"
 #include "rank/rank_util.h"
@@ -56,7 +57,7 @@ namespace commands {
                 leaderboard_embed.add_component_v2(
                     dpp::component()
                         .set_type(dpp::cot_text_display)
-                        .set_content(std::format("**{}**\n@{}\nLevel {} • {} ({} XP)", nickname.empty() ? user->global_name : nickname, user->username, level, rank.name, xp))
+                        .set_content(std::format("**{}**\n@{}\nLevel {} • {} ({} XP)", nickname.empty() ? user->global_name : nickname, user->username, level, rank.name, util::format_with_commas(xp)))
                 );
 
                 if (it + 1 != leaderboard_entries.end()) {
