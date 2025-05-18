@@ -1,5 +1,7 @@
 #pragma once
+#include <dpp/guild.h>
 #include <cstdint>
+#include <optional>
 #include <string>
 
 namespace util {
@@ -35,4 +37,10 @@ namespace util {
         ss << std::fixed << value;
         return ss.str();
     }
+
+    /// @brief Get a cached guild member from the bot's cache.
+    /// @param bot The bot instance.
+    /// @param user_id The user ID of the member to retrieve.
+    /// @return An optional containing the guild member if found, or std::nullopt if not found.
+    std::optional<dpp::guild_member> get_cached_guild_member(const dpp::cluster& bot, const dpp::snowflake& user_id);
 }

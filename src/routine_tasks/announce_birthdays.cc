@@ -9,6 +9,7 @@
 #include <string>
 #include <optional>
 #include "db/mongo_database.h"
+#include "util/helpers.h"
 #include "logging/logging.h"
 #include "constants.h"
 
@@ -16,24 +17,6 @@ using bsoncxx::builder::basic::make_document;
 using bsoncxx::builder::basic::kvp;
 
 namespace routine_tasks {
-    std::optional<dpp::guild_member> get_cached_guild_member(const dpp::cluster& bot, const dpp::snowflake user_id) {
-        // find the guild in the cluster cache
-        auto* guild = dpp::get_guild_cache()->find(BASE_GUILD_ID);
-
-        if (guild == nullptr) {
-            return std::nullopt;
-        }
-
-        // find the member in that guild’s cache
-        dpp::members_container members = guild->members;
-
-        if (members.find(user_id) == members.end()) {
-            return std::nullopt;
-        }
-
-        return members[user_id];
-    }
-
     dpp::task<void> announce_birthdays(dpp::cluster& bot) {
         co_await logging::event(&bot, "Birthdays", "Starting birthdays task.");
 
@@ -52,7 +35,7 @@ namespace routine_tasks {
         for (auto& doc : yesterday_cursor) {
             std::string_view user_id = doc["_id"].get_string();
 
-            std::optional<dpp::guild_member> member_opt = get_cached_guild_member(bot, user_id);
+            std::optional<dpp::guild_member> member_opt = util::get_cached_guild_member(bot, user_id);
             dpp::guild_member member;
 
             if (!member_opt) {
@@ -87,7 +70,7 @@ namespace routine_tasks {
         for (auto& doc : cursor) {
             std::string_view user_id = doc["_id"].get_string();
 
-            std::optional<dpp::guild_member> member_opt = get_cached_guild_member(bot, user_id);
+            std::optional<dpp::guild_member> member_opt = util::get_cached_guild_member(bot, user_id);
             if (member_opt) {
                 birthday_members.push_back(member_opt.value());
                 continue;

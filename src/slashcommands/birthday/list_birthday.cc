@@ -8,6 +8,7 @@
 #include <algorithm>
 #include "constants.h"
 #include "birthday_constants.h"
+#include "util/helpers.h"
 
 using bsoncxx::builder::basic::make_document;
 using bsoncxx::builder::basic::kvp;
@@ -15,6 +16,8 @@ using bsoncxx::builder::basic::kvp;
 namespace slash_commands {
     namespace birthday {
         dpp::task<void> list(const dpp::slashcommand_t& event) {
+            co_await event.co_thinking();
+
             dpp::command_interaction interaction = event.command.get_command_interaction();
             auto subcommand = interaction.options[0];
             int month = subcommand.get_value<long>(0);
@@ -39,7 +42,7 @@ namespace slash_commands {
                     .set_title(":birthday: Birthdays for " + month_string)
                     .set_description("No birtdays for this month!");
 
-                co_await event.co_reply(dpp::message{}.add_embed(embed));
+                co_await event.co_edit_response(embed);
                 co_return;
             }
 
@@ -53,13 +56,17 @@ namespace slash_commands {
                 auto birthday = results[i]["birthday"].get_document().view();
                 int day = birthday["day"].get_int32().value;
 
-                auto user_callback = co_await event.owner->co_user_get_cached(user_id);
+                std::optional<dpp::guild_member> member_opt = util::get_cached_guild_member(*event.owner, user_id);
+                dpp::guild_member member;
 
-                if (user_callback.is_error()) {
-                    continue;
+                if (!member_opt) {
+                    auto member_callback = co_await event.owner->co_guild_get_member(BASE_GUILD_ID, user_id);
+                    if (member_callback.is_error()) continue; // skip users not in the guild
+                    member = member_callback.get<dpp::guild_member>();
                 }
-
-                dpp::user_identified user = user_callback.get<dpp::user_identified>();
+                else {
+                    member = member_opt.value();
+                }
 
                 if (i == 18) {
                     if (results.size() > 19) {
@@ -70,11 +77,11 @@ namespace slash_commands {
                     break;
                 }
                 else {
-                    embed.add_field(user.global_name, std::format("{} {}", shortened_month_string, day), true);
+                    embed.add_field(member.get_user()->global_name.empty() ? member.get_user()->username : member.get_user()->global_name, std::format("{} {}", shortened_month_string, day), true);
                 }
             }
 
-            co_await event.co_reply(dpp::message{}.add_embed(embed));
+            co_await event.co_edit_response(embed);
         }
     }
 }
