@@ -5,6 +5,7 @@
 #include "birthday/birthday.h"
 #include "stats.h"
 #include "store.h"
+#include "leaderboard.h"
 
 typedef std::function<dpp::task<void>(const dpp::slashcommand_t&)> slash_command_function;
 
@@ -12,6 +13,7 @@ static std::unordered_map<std::string, slash_command_function> command_map = {
     {"birthday", slash_commands::birthday::execute},
     {"stats", slash_commands::stats::execute},
     {"store", slash_commands::store::execute},
+    {"leaderboard", slash_commands::leaderboard::execute},
 };
 
 namespace slash_commands {
