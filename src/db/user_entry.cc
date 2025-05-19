@@ -221,7 +221,7 @@ std::pair<int, int64_t> UserEntry::process_submission(const dpp::snowflake& subm
 int UserEntry::get_recent_message_count() {
     auto doc = get_user_document();
 
-    auto resets_at = doc["recentmessages"]["resets_at"];
+    auto resets_at = doc["recent_messages"]["resets_at"];
     if (resets_at.type() == bsoncxx::type::k_null) {
         return 0;
     }
@@ -232,7 +232,7 @@ int UserEntry::get_recent_message_count() {
         return 0;
     }
 
-    return doc["recentmessages"]["count"].get_int32();
+    return doc["recent_messages"]["count"].get_int32();
 }
 
 void UserEntry::increment_recent_message_count() {
@@ -241,14 +241,14 @@ void UserEntry::increment_recent_message_count() {
 
     int64_t seconds_since_epoch = util::seconds_since_epoch();
 
-    auto resets_at = doc["recentmessages"]["resets_at"];
+    auto resets_at = doc["recent_messages"]["resets_at"];
 
     // If resets_at is null, or is in the past, set it to 30 seconds from now
     if (resets_at.type() == bsoncxx::type::k_null || resets_at.get_int64() <= seconds_since_epoch) {
         db["users"].update_one(
             make_document(kvp("_id", user_id)),
             make_document(kvp("$set", make_document(
-                kvp("recentmessages", make_document(
+                kvp("recent_messages", make_document(
                     kvp("count", 1),
                     kvp("resets_at", seconds_since_epoch + 30)
                 ))
@@ -258,7 +258,7 @@ void UserEntry::increment_recent_message_count() {
     else {
         db["users"].update_one(
             make_document(kvp("_id", user_id)),
-            make_document(kvp("$inc", make_document(kvp("recentmessages.count", 1))))
+            make_document(kvp("$inc", make_document(kvp("recent_messages.count", 1))))
         );
     }
 }
@@ -268,7 +268,7 @@ inline void UserEntry::reset_recent_message_count() {
     db["users"].update_one(
         make_document(kvp("_id", user_id)),
         make_document(kvp("$set", make_document(
-            kvp("recentmessages", make_document(
+            kvp("recent_messages", make_document(
                 kvp("count", 0),
                 kvp("resets_at", DB_NULL))
             )
