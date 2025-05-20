@@ -24,8 +24,6 @@ struct leaderboard_entry {
 namespace slash_commands {
     namespace leaderboard {
         dpp::task<void> execute(const dpp::slashcommand_t& event) {
-            co_await event.co_thinking();
-
             auto count = MongoDatabase::get_database()["users"].estimated_document_count();
             auto cursor = MongoDatabase::get_database()["users"].find(
                 {},
@@ -51,7 +49,7 @@ namespace slash_commands {
             size_t start_idx = 0;
 
             if (leaderboard_entries.size() == 0) {
-                co_await event.co_edit_response("Something went wrong while trying to get the leaderboard.");
+                co_await event.co_reply("Something went wrong while trying to get the leaderboard.");
                 co_return;
             }
 
@@ -109,43 +107,7 @@ namespace slash_commands {
                 }
             }
 
-
-            // const std::vector<bsoncxx::document::view> leaderboard_entries(cursor.begin(), cursor.end());
-
-            // for (std::vector<bsoncxx::document::view>::const_iterator it = leaderboard_entries.begin(); it != leaderboard_entries.begin() + 4; ++it) {
-            //     const bsoncxx::document::view doc = *it;
-
-            //     std::string_view user_id = doc["_id"].get_string().value;
-            //     const int xp = doc["xp"].get_int32();
-            //     const int level = xp::calculator::level_from_xp(xp);
-            //     const Rank& rank = rankutil::rank_from_level(level);
-
-            //     auto member_callback = co_await event.owner->co_guild_get_member(BASE_GUILD_ID, user_id);
-
-            //     if (member_callback.is_error()) continue; // skip users not in the guild
-
-            //     auto member = member_callback.get<dpp::guild_member>();
-            //     auto user = member.get_user();
-
-            //     std::string nickname = member.get_nickname();
-
-            //     leaderboard_embed.add_component_v2(
-            //         dpp::component()
-            //             .set_type(dpp::cot_text_display)
-            //             .set_content(std::format("**{}**\n@{}\nLevel {} • {} ({} XP)", nickname.empty() ? user->global_name : nickname, user->username, level, rank.name, util::format_with_commas(xp)))
-            //     );
-
-            //     if (it + 1 != leaderboard_entries.end()) {
-            //         leaderboard_embed.add_component_v2(
-            //             dpp::component()
-            //                 .set_type(dpp::cot_separator)
-            //                 .set_spacing(dpp::sep_small)
-            //                 .set_divider(true)
-            //         );
-            //     }
-            // }
-
-            co_await event.co_edit_response(dpp::message().add_component_v2(leaderboard_embed));
+            co_await event.co_reply(dpp::message().add_component_v2(leaderboard_embed));
         }
     }
 }
