@@ -309,43 +309,6 @@ std::optional<std::vector<double>> UserEntry::get_submit_boosts() {
     return boosts_vec;
 }
 
-void UserEntry::add_submit_boosts(std::vector<double> boosts) {
-    auto doc = get_user_document();
-    auto items = doc["items"].get_document().view();
-    auto boosts_opt = items.find("submit_boosts");
-
-    bsoncxx::builder::basic::array boosts_array;
-
-    if (boosts_opt == items.end()) {
-        for (const auto& boost : boosts) {
-            boosts_array.append(boost);
-        }
-
-        auto& db = MongoDatabase::get_database();
-        db["users"].update_one(
-            make_document(kvp("_id", user_id)),
-            make_document(kvp("$set", make_document(
-                kvp("items.submit_boosts", boosts_array)
-            )))
-        );
-    }
-    else {
-        auto& db = MongoDatabase::get_database();
-
-        for (const auto& boost : boosts) {
-            boosts_array.append(boost);
-        }
-
-        db["users"].update_one(
-            make_document(kvp("_id", user_id)),
-            make_document(kvp("$push", make_document(
-                kvp("items.submit_boosts", make_document(
-                    kvp("$each", boosts_array)
-                )))))
-        );
-    }
-}
-
 std::optional<double> UserEntry::shift_out_submit_boost() {
     auto& db = MongoDatabase::get_database();
     auto doc = get_user_document();
