@@ -18,7 +18,7 @@ namespace restore_roles {
 
         if (elem_ptr == end) co_return;
 
-        for (const int* ptr = elem_ptr; elem_ptr >= rankutil::rank_levels; --ptr) {
+        for (const int* ptr = elem_ptr; ptr >= rankutil::rank_levels; --ptr) {
             const int64_t role_id = rankutil::rank_from_level(*ptr).role_id;
 
             member.add_role(role_id);
