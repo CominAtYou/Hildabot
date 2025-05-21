@@ -17,6 +17,7 @@ SRCS  := $(shell find $(SRCDIR) -name '*.cc')
 OBJS  := $(patsubst $(SRCDIR)/%.cc,$(BUILDDIR)/%.o,$(SRCS))
 
 # ——— Default target ———
+all: CXXFLAGS += -O3
 all: $(TARGET)
 
 # link
