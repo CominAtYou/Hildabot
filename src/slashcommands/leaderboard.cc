@@ -94,7 +94,7 @@ namespace slash_commands {
                 leaderboard_embed.add_component_v2(
                     dpp::component()
                         .set_type(dpp::cot_text_display)
-                        .set_content(std::format("**{} - {}**\n@{}\nLevel {} • {} ({} XP)", entry.pos, nickname.empty() ? user->global_name : nickname, user->username, level, rank.name, util::format_with_commas(entry.xp)))
+                        .set_content(std::format("**{}\\. {}**\n@{}\nLevel {} • {} ({} XP)", entry.pos, nickname.empty() ? user->global_name : nickname, user->username, level, rank.name, util::format_with_commas(entry.xp)))
                 );
 
                 if (i + 1 != end_idx) {
