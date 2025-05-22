@@ -57,7 +57,7 @@ void UserEntry::create_entry_if_not_present(const std::string user_id) {
                 kvp("submit_boosts", make_array()),
                 kvp("streak_savers", make_document(
                     kvp("standard", 0),
-                    kvp("mega", 0)
+                    kvp("super", 0)
                 ))
             )),
             kvp("times_submitted", 0),
