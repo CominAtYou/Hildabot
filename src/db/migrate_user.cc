@@ -25,7 +25,8 @@ namespace MongoDatabase {
                 kvp("items.streak_savers", make_document(
                     kvp("standard", 0),
                     kvp("mega", 0)
-                ))
+                )),
+                kvp("version", static_cast<int>(UserEntry::version::VERSION_2))
             )))
         );
     }
