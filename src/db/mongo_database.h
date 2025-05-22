@@ -5,7 +5,6 @@
 
 #define DB_NULL bsoncxx::types::b_null{}
 
-class MongoDatabase {
-public:
-    static mongocxx::database& get_database();
+namespace MongoDatabase {
+    mongocxx::database& get_database();
 };
