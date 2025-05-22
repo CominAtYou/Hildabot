@@ -3,6 +3,7 @@
 #include "scheduler/instance.h"
 #include "announce_birthdays.h"
 #include "streak_warnings.h"
+#include "apply_streak_savers.h"
 
 namespace routine_tasks {
     void schedule(dpp::cluster& bot) {
@@ -12,6 +13,10 @@ namespace routine_tasks {
 
         scheduler.cron("0 0 * * *", [&bot]() -> dpp::task<void> {
             co_await streak_warnings(bot);
+        });
+
+        scheduler.cron("0 0 * * *", [&bot]() {
+            apply_streak_savers(bot);
         });
     }
 }
