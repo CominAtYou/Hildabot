@@ -31,5 +31,5 @@ class store_item {
             this->purchase_limit = purchase_limit;
         }
 
-        virtual dpp::task<void> give_item(const dpp::button_click_t& event) const = 0;
+        virtual dpp::task<bool> give_item(const dpp::button_click_t& event) const = 0;
 };

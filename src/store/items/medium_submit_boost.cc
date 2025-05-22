@@ -8,7 +8,7 @@ using bsoncxx::builder::basic::make_document;
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_array;
 
-dpp::task<void> medium_submit_boost::give_item(const dpp::button_click_t& event) const {
+dpp::task<bool> medium_submit_boost::give_item(const dpp::button_click_t& event) const {
     UserEntry user_entry(event.command.usr);
 
     std::chrono::zoned_time zt{"America/Chicago", std::chrono::system_clock::now()};
@@ -62,4 +62,5 @@ dpp::task<void> medium_submit_boost::give_item(const dpp::button_click_t& event)
     );
 
     co_await this->send_success_message(event, "Your next 3 submissions will be given a 10% increase in XP.");
+    co_return true;
 }
