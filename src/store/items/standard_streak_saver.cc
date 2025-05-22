@@ -14,7 +14,7 @@ using bsoncxx::builder::basic::make_document;
 using bsoncxx::builder::basic::kvp;
 
 dpp::task<bool> standard_streak_saver::give_item(const dpp::button_click_t& event) const {
-    if (!MongoDatabase::migrate_user(event.owner, event.command.usr.id)) {
+    if (!MongoDatabase::migrate_user(event.owner, event.command.usr)) {
         co_return false;
     }
 
