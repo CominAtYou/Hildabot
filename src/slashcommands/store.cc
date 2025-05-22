@@ -129,7 +129,7 @@ namespace slash_commands {
             }
 
             const dpp::snowflake user_id = button_data[1];
-            const int64_t creation_time = std::stoll(button_data[3]);
+            const int64_t creation_time = std::stoll(button_data[2]);
 
             if (event.command.usr.id != user_id) {
                 dpp::message reply = dpp::message("You can't use this button. If you wish to use the store, please use the </store:1071965429012107486> command.").set_flags(dpp::m_ephemeral);

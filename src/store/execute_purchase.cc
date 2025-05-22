@@ -45,7 +45,13 @@ namespace store {
             co_return;
         }
 
-        co_await item->give_item(event);
-        logging::event(event.owner, "Store", "{} ({}) purchased {} for {} tokens.", event.command.usr.username, event.command.usr.id.str(), item->name, item->price);
+        const bool result = co_await item->give_item(event);
+
+        if (!result) {
+            co_await send_purchase_error_message(event, "An error occurred while processing your purchase. Try giving it another shot.");
+        }
+        else {
+            logging::event(event.owner, "Store", "{} ({}) purchased {} for {} tokens.", event.command.usr.username, event.command.usr.id.str(), item->name, item->price);
+        }
     }
 }

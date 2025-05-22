@@ -14,13 +14,12 @@ class UserEntry {
         void reset_recent_message_count();
         void create_entry_if_not_present(const std::string user_id);
         bsoncxx::document::value get_user_document();
-
-        enum version {
-            VERSION_1 // Initial version with basic fields
+    public:
+        enum class version {
+            VERSION_1, // Initial version with basic fields
+            VERSION_2 // Introduces streak savers
         };
 
-        UserEntry::version get_version();
-    public:
         UserEntry(const dpp::user& user);
         UserEntry(const dpp::guild_member& member);
         UserEntry(const dpp::snowflake& user_id);
@@ -116,4 +115,7 @@ class UserEntry {
         /// @return The user's level.
         int get_level();
 
+        /// @brief Get the version of the user entry.
+        /// @return The version of the user entry.
+        UserEntry::version get_version();
 };

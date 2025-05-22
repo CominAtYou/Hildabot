@@ -54,7 +54,11 @@ void UserEntry::create_entry_if_not_present(const std::string user_id) {
             )),
             kvp("items", make_document(
                 kvp("inventory", make_array()),
-                kvp("submit_boosts", make_array())
+                kvp("submit_boosts", make_array()),
+                kvp("streak_savers", make_document(
+                    kvp("standard", 0),
+                    kvp("mega", 0)
+                ))
             )),
             kvp("times_submitted", 0),
             kvp("latest_submission_id", DB_NULL),
@@ -62,7 +66,7 @@ void UserEntry::create_entry_if_not_present(const std::string user_id) {
             kvp("high_score", 0),
             kvp("xp", 0),
             kvp("level_alerts_disabled", false),
-            kvp("version", UserEntry::version::VERSION_1)
+            kvp("version", static_cast<int>(UserEntry::version::VERSION_2))
         ));
     }
 }

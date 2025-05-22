@@ -15,38 +15,6 @@ using bsoncxx::builder::basic::kvp;
 
 namespace store {
     namespace purchase_confirmation {
-        dpp::task<void> send_purchase_error_message(const dpp::button_click_t& event, const std::string& error_message) {
-            dpp::message reply = dpp::message()
-                .add_component_v2(
-                    dpp::component()
-                        .set_type(dpp::cot_container)
-                        .set_accent(ERROR_RED)
-                        .add_component_v2(
-                            dpp::component()
-                                .set_type(dpp::cot_text_display)
-                                .set_content("## Unable to Complete Purchase\n" + error_message)
-                        )
-                        .add_component_v2(
-                            dpp::component()
-                                .set_type(dpp::cot_separator)
-                                .set_spacing(dpp::sep_small)
-                        )
-                        .add_component_v2(
-                            dpp::component()
-                                .set_type(dpp::cot_action_row)
-                                .add_component(
-                                    dpp::component()
-                                        .set_type(dpp::cot_button)
-                                        .set_label("OK")
-                                        .set_id("store_return_to_menu:" + event.command.usr.id.str() + ":null")
-                                        .set_style(dpp::cos_primary)
-                                )
-                        )
-                );
-
-            co_await event.co_reply(dpp::ir_update_message, reply);
-        }
-
         dpp::task<void> execute(const dpp::button_click_t& event) {
             // structure: command:userid:itemid
             std::istringstream iss(event.custom_id);
@@ -131,7 +99,7 @@ namespace store {
                             .add_component_v2(
                                 dpp::component()
                                     .set_type(dpp::cot_text_display)
-                                    .set_content("## Buy this item?\n" + std::format("Are you sure you want to buy {} for {} tokens?", item->name, item->price))
+                                    .set_content("## Buy this item?\n" + std::format("Are you sure you want to buy {} for {} tokens?", item->name, util::format_with_commas(item->price)))
                             )
                             .add_component_v2(
                                 dpp::component()
