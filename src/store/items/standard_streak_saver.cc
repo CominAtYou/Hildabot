@@ -66,6 +66,33 @@ dpp::task<bool> standard_streak_saver::give_item(const dpp::button_click_t& even
         )))
     );
 
-    co_await this->send_success_message(event, "Your streak will be extended by 3 days should it expire.");
+    auto user_doc = *MongoDatabase::get_database()["users"].find_one(
+        make_document(kvp("_id", event.command.usr.id.str())
+    ));
+
+    auto streak_expiry = user_entry.get_streak_expiry();
+
+    if (!streak_expiry) {
+        co_await this->send_success_message(event, "Your streak will be extended by 3 days should it expire.");
+        co_return true;
+    }
+
+    auto items = user_doc["items"].get_document().view();
+    auto streak_savers = items["streak_savers"].get_document().view();
+
+    auto streak_expiry_tp = std::chrono::sys_seconds{std::chrono::seconds{*streak_expiry}};
+    const int std_cnt = streak_savers["standard"].get_int32();
+    const int super_cnt = streak_savers["super"].get_int32();
+    const int days_to_add = 7 * super_cnt + 3 * std_cnt;
+
+    std::chrono::zoned_time zt_old{"America/Chicago", streak_expiry_tp};
+    auto local_midnight = std::chrono::floor<std::chrono::days>(zt_old.get_local_time());
+
+    auto new_local_mid = local_midnight + std::chrono::days{days_to_add};
+
+    std::chrono::zoned_time zt_new{"America/Chicago", new_local_mid};
+    int64_t new_expiry = std::chrono::duration_cast<std::chrono::seconds>(zt_new.get_sys_time().time_since_epoch()).count();
+
+    co_await this->send_success_message(event, std::format("Your streak will be extended by 3 days should it expire.\n### Effective streak expiry:\n<t:{}>", new_expiry));
     co_return true;
 }
