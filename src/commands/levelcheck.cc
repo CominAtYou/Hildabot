@@ -45,7 +45,7 @@ namespace commands {
                 co_await event.owner->co_guild_edit_member(member);
 
                 co_await event.co_reply("You're all set. The roles you were missing have been added to you.");
-                co_await logging::event(event.owner, "LevelCheck", "Restored {} role(s) for {} ({})", restored_roles, user.username, user.id.str());
+                logging::event(event.owner, "LevelCheck", "Restored {} role(s) for {} ({})", restored_roles, user.username, user.id.str());
             }
             else {
                 co_await event.co_reply("You don't seem to be missing any roles, so you're all set!");

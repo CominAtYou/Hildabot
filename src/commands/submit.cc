@@ -86,7 +86,7 @@ namespace commands {
 
             co_await event.co_send(dpp::message{}.add_embed(embed));
 
-            co_await logging::event(event.owner, "Submit", "Successfully processed submission from {} ({}) in <#{}>. (Submission ID: {})",
+            logging::event(event.owner, "Submit", "Successfully processed submission from {} ({}) in <#{}>. (Submission ID: {})",
                 event.msg.author.username, event.msg.author.id.str(), event.msg.channel_id.str(), event.msg.id.str());
 
             co_await xp::check_for_level_up(current_level, event.owner, event.msg.author, event.msg.member);

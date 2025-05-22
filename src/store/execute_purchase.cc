@@ -46,6 +46,6 @@ namespace store {
         }
 
         co_await item->give_item(event);
-        co_await logging::event(event.owner, "Store", "{} ({}) purchased {} for {} tokens.", event.command.usr.username, event.command.usr.id.str(), item->name, item->price);
+        logging::event(event.owner, "Store", "{} ({}) purchased {} for {} tokens.", event.command.usr.username, event.command.usr.id.str(), item->name, item->price);
     }
 }

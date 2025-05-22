@@ -120,7 +120,7 @@ namespace commands {
                 co_await event.owner->co_message_add_reaction(event.msg.id, event.msg.channel_id, "👍");
             }
 
-            co_await logging::event(event.owner, "UserInit", "{} ({}) was initialized to level {} by {} ({})", user.username, user.id.str(), level, event.msg.author.username, event.msg.author.id.str());
+            logging::event(event.owner, "UserInit", "{} ({}) was initialized to level {} by {} ({})", user.username, user.id.str(), level, event.msg.author.username, event.msg.author.id.str());
         }
     }
 }

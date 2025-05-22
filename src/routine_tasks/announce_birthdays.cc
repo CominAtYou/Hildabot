@@ -18,7 +18,7 @@ using bsoncxx::builder::basic::kvp;
 
 namespace routine_tasks {
     dpp::task<void> announce_birthdays(dpp::cluster& bot) {
-        co_await logging::event(&bot, "Birthdays", "Starting birthdays task.");
+        logging::event(&bot, "Birthdays", "Starting birthdays task.");
 
         std::chrono::zoned_time zt{"America/Chicago", std::chrono::system_clock::now()};
         // get yesterday's date
@@ -91,7 +91,7 @@ namespace routine_tasks {
             auto message_callback = co_await bot.co_message_create(message);
 
             if (message_callback.is_error()) {
-                co_await logging::error(&bot, "Birthdays", "Failed to send birthday message: {}", message_callback.get_error().human_readable);
+                logging::error(&bot, "Birthdays", "Failed to send birthday message: {}", message_callback.get_error().human_readable);
             }
         }
         else if (birthday_members.size() == 2) {
@@ -101,7 +101,7 @@ namespace routine_tasks {
             auto message_callback = co_await bot.co_message_create(message);
 
             if (message_callback.is_error()) {
-                co_await logging::error(&bot, "Birthdays", "Failed to send birthday message: {}", message_callback.get_error().human_readable);
+                logging::error(&bot, "Birthdays", "Failed to send birthday message: {}", message_callback.get_error().human_readable);
             }
         }
         else if (birthday_members.size() > 2) {
@@ -122,7 +122,7 @@ namespace routine_tasks {
             message.set_channel_id(BIRTHDAY_CHANNEL_ID);
             auto message_callback = co_await bot.co_message_create(message);
             if (message_callback.is_error()) {
-                co_await logging::error(&bot, "Birthdays", "Failed to send birthday message: {}", message_callback.get_error().human_readable);
+                logging::error(&bot, "Birthdays", "Failed to send birthday message: {}", message_callback.get_error().human_readable);
             }
         }
 
@@ -132,6 +132,6 @@ namespace routine_tasks {
             co_await bot.co_guild_edit_member(member);
         }
 
-        co_await logging::event(&bot, "Birthdays", "Completed birthdays task.");
+        logging::event(&bot, "Birthdays", "Completed birthdays task.");
     }
 }

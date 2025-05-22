@@ -9,7 +9,7 @@
 
 namespace logging {
     template<typename... Args>
-    dpp::task<void> event(dpp::cluster* bot, const char* event_name, std::format_string<Args...> fmt, Args&&... args) {
+    void event(dpp::cluster* bot, const char* event_name, std::format_string<Args...> fmt, Args&&... args) {
         // get date and time in yyyy-MM-dd HH:mm:ss format
 
         auto now = std::chrono::system_clock::now();
@@ -26,11 +26,11 @@ namespace logging {
         message.set_content(formatted_log);
         message.set_channel_id(LOG_CHANNEL_ID);
 
-        co_await bot->co_message_create(message);
+        bot->message_create(message, [](const dpp::confirmation_callback_t& callback) {});
     }
 
     template<typename... Args>
-    dpp::task<void> error(dpp::cluster* bot, const char* event_name, std::format_string<Args...> fmt,  Args&&... args) {
+    void error(dpp::cluster* bot, const char* event_name, std::format_string<Args...> fmt,  Args&&... args) {
         // get date and time in yyyy-MM-dd HH:mm:ss format
         auto now = std::chrono::system_clock::now();
         const std::time_t now_time = std::chrono::system_clock::to_time_t(now);
@@ -52,6 +52,6 @@ namespace logging {
         message.set_channel_id(LOG_CHANNEL_ID);
         message.add_embed(embed);
 
-        co_await bot->co_message_create(message);
+        bot->message_create(message, [](const dpp::confirmation_callback_t& callback) {});
     }
 }

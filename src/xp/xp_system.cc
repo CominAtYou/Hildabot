@@ -49,7 +49,7 @@ namespace xp {
         // Check if level up occurred.
         if (current_level <= before_action_level) co_return;
 
-        co_await logging::event(bot, "LevelUp", "{} ({}) leveled up to {}: {} XP", user.username, user.id.str(), current_level, user_entry.get_xp());
+        logging::event(bot, "LevelUp", "{} ({}) leveled up to {}: {} XP", user.username, user.id.str(), current_level, user_entry.get_xp());
 
         const bool is_rank_level = rankutil::is_level_rank_level(current_level);
 
@@ -69,14 +69,14 @@ namespace xp {
             dpp::confirmation_callback_t callback = co_await bot->co_direct_message_create(user.id, message);
 
             if (callback.is_error()) {
-                co_await logging::error(bot, "LevelAlert", "Failed to send level up message to {}.\n{}", user.username, callback.get_error().message);
+                logging::error(bot, "LevelAlert", "Failed to send level up message to {}.\n{}", user.username, callback.get_error().message);
             }
             else {
-                co_await logging::event(bot, "LevelAlert", "Sent level up message to {}.", user.username);
+                logging::event(bot, "LevelAlert", "Sent level up message to {}.", user.username);
             }
         }
         else {
-            co_await logging::event(bot, "LevelAlert", "Not sending a message to {} as they have level alerts off.", user.username);
+            logging::event(bot, "LevelAlert", "Not sending a message to {} as they have level alerts off.", user.username);
         }
 
         if (is_rank_level) {
@@ -94,7 +94,7 @@ namespace xp {
                     .add_field("Role", std::format("{} ({})", rank.name, rank.level), true)
                     .set_color(ERROR_RED);
 
-                co_await logging::error(bot, "LevelAlert", "Failed to assign {} to {} ({})!", rank.name, user.username, user.id.str());
+                logging::error(bot, "LevelAlert", "Failed to assign {} to {} ({})!", rank.name, user.username, user.id.str());
 
                 auto owner_id_opt = co_await util::get_owner_id(bot);
                 if (!owner_id_opt.has_value()) {

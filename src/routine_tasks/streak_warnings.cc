@@ -14,7 +14,7 @@ using bsoncxx::builder::basic::kvp;
 
 namespace routine_tasks {
     dpp::task<void> streak_warnings(dpp::cluster& bot) {
-        co_await logging::event(&bot, "StreakWarnings", "Starting streak warnings task.");
+        logging::event(&bot, "StreakWarnings", "Starting streak warnings task.");
 
         const int64_t tomorrow_midnight = util::midnight_tomorrow_seconds();
         const int64_t midnight_three_days_from_now = util::midnight_seconds_in_days(3);
@@ -55,6 +55,6 @@ namespace routine_tasks {
             co_await bot.co_direct_message_create(user_id, embed);
         }
 
-        co_await logging::event(&bot, "StreakWarnings", "Finished streak warnings task.");
+        logging::event(&bot, "StreakWarnings", "Finished streak warnings task.");
     }
 }
