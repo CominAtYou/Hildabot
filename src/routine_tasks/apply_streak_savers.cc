@@ -14,7 +14,7 @@ using bsoncxx::builder::basic::kvp;
 // "effective streak expiry"
 namespace routine_tasks {
     void apply_streak_savers(dpp::cluster& bot) {
-        logging::event(&bot, "Routine Tasks", "Applying streak savers...");
+        logging::event(&bot, "StreakSavers", "Starting streak savers task.");
 
         const int64_t today_midnight = util::midnight_today_seconds();
 
