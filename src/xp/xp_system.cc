@@ -69,7 +69,12 @@ namespace xp {
             dpp::confirmation_callback_t callback = co_await bot->co_direct_message_create(user.id, message);
 
             if (callback.is_error()) {
-                logging::error(bot, "LevelAlert", "Failed to send level up message to {}.\n{}", user.username, callback.get_error().message);
+                if (callback.get_error().message == "Cannot send messages to this user") {
+                    logging::event(bot, "LevelAlert", "Not sending a message to {} as they have level alerts off.", user.username);
+                }
+                else {
+                    logging::error(bot, "LevelAlert", "Failed to send level up message to {}.\n{}", user.username, callback.get_error().message);
+                }
             }
             else {
                 logging::event(bot, "LevelAlert", "Sent level up message to {}.", user.username);
