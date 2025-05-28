@@ -5,7 +5,7 @@
 
 #include "ctpl_stl.h"
 
-#include "InterruptableSleep.h"
+#include "InterruptibleSleep.h"
 #include "Cron.h"
 
 namespace Bosma {
@@ -165,7 +165,7 @@ namespace Bosma {
     private:
         std::atomic<bool> done;
 
-        Bosma::InterruptableSleep sleeper;
+        Bosma::InterruptibleSleep sleeper;
 
         std::multimap<Clock::time_point, std::shared_ptr<Task>> tasks;
         std::mutex lock;

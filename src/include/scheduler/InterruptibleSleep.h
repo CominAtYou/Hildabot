@@ -7,29 +7,29 @@
 #include <sstream>
 
 namespace Bosma {
-    class InterruptableSleep {
+    class InterruptibleSleep {
 
         using Clock = std::chrono::system_clock;
 
-        // InterruptableSleep offers a sleep that can be interrupted by any thread.
+        // InterruptibleSleep offers a sleep that can be interrupted by any thread.
         // It can be interrupted multiple times
         // and be interrupted before any sleep is called (the sleep will immediately complete)
         // Has same interface as condition_variables and futures, except with sleep instead of wait.
         // For a given object, sleep can be called on multiple threads safely, but is not recommended as behaviour is undefined.
 
     public:
-        InterruptableSleep() : interrupted(false) {
+        InterruptibleSleep() : interrupted(false) {
         }
 
-        InterruptableSleep(const InterruptableSleep &) = delete;
+        InterruptibleSleep(const InterruptibleSleep &) = delete;
 
-        InterruptableSleep(InterruptableSleep &&) noexcept = delete;
+        InterruptibleSleep(InterruptibleSleep &&) noexcept = delete;
 
-        ~InterruptableSleep() noexcept = default;
+        ~InterruptibleSleep() noexcept = default;
 
-        InterruptableSleep &operator=(const InterruptableSleep &) noexcept = delete;
+        InterruptibleSleep &operator=(const InterruptibleSleep &) noexcept = delete;
 
-        InterruptableSleep &operator=(InterruptableSleep &&) noexcept = delete;
+        InterruptibleSleep &operator=(InterruptibleSleep &&) noexcept = delete;
 
         void sleep_for(Clock::duration duration) {
           std::unique_lock<std::mutex> ul(m);

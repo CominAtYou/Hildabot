@@ -35,7 +35,7 @@ namespace Bosma {
         } catch (const std::invalid_argument &) {
           throw BadCronExpression("malformed cron string (`" + token + "` not an integer or *): " + expression);
         } catch (const std::out_of_range &) {
-          throw BadCronExpression("malformed cron string (`" + token + "` not convertable to int): " + expression);
+          throw BadCronExpression("malformed cron string (`" + token + "` not convertible to int): " + expression);
         }
         if (field < lower_bound || field > upper_bound) {
           std::ostringstream oss;

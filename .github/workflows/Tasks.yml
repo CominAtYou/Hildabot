@@ -32,7 +32,7 @@ jobs:
                 cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=20
                 cmake --build .
                 sudo cmake --build . --target install
-            - name: Set up Workspace
+            - name: Set up workspace
               run: |
                 cat <<EOF > $GITHUB_WORKSPACE/src/include/config.h
                 #pragma once
