@@ -17,6 +17,7 @@ namespace Bosma {
                 f(std::move(f)), recur(recur), interval(interval) {}
 
         virtual Clock::time_point get_new_time() const = 0;
+        virtual ~Task() = default;
 
         std::function<void()> f;
 

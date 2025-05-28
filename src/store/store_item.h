@@ -32,4 +32,5 @@ class store_item {
         }
 
         virtual dpp::task<bool> give_item(const dpp::button_click_t& event) const = 0;
+        virtual ~store_item() = default;
 };
