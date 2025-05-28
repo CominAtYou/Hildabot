@@ -85,7 +85,7 @@ namespace routine_tasks {
         }
 
         if (birthday_members.size() == 1) {
-            dpp::message message(std::format("Hey <@{}>! I just wanted to wish you the happiest of birthdays! Can I have a slice of cake too? :birthday: :heart:", birthday_members[0].get_user()->id.str()));
+            dpp::message message(std::format("Hey <@{}>! I just wanted to wish you the happiest of birthdays! Can I have a slice of cake too? :birthday: :heart:", birthday_members[0].user_id.str()));
             message.set_channel_id(BIRTHDAY_CHANNEL_ID);
 
             auto message_callback = co_await bot.co_message_create(message);
@@ -95,7 +95,7 @@ namespace routine_tasks {
             }
         }
         else if (birthday_members.size() == 2) {
-            dpp::message message(std::format("Hey <@{}> and <@{}>! I just wanted to wish you both the happiest of birthdays! Can I have a slice of cake too? :birthday: :heart:", birthday_members[0].get_user()->id.str(), birthday_members[1].get_user()->id.str()));
+            dpp::message message(std::format("Hey <@{}> and <@{}>! I just wanted to wish you both the happiest of birthdays! Can I have a slice of cake too? :birthday: :heart:", birthday_members[0].user_id.str(), birthday_members[1].get_user()->id.str()));
             message.set_channel_id(BIRTHDAY_CHANNEL_ID);
 
             auto message_callback = co_await bot.co_message_create(message);
