@@ -27,6 +27,11 @@ namespace routine_tasks {
             const std::string_view user_id = doc["_id"].get_string();
             UserEntry user_entry(user_id);
 
+            if (user_entry.get_version() < UserEntry::version::VERSION_2) {
+                // User does not have streak savers, skip
+                continue;
+            }
+
             const int standard_count = doc["items"]["streak_savers"]["standard"].get_int32();
             const int super_count = doc["items"]["streak_savers"]["super"].get_int32();
 
