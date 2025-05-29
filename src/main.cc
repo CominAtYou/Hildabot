@@ -22,14 +22,6 @@ int main() {
 
     bot.on_log(dpp::utility::cout_logger());
 
-    // todo:
-    // midnight tasks: birthdays, streak expiries, streak warnings
-    // member joins
-    // kudos tracking
-    // leaderboard command
-    // edit birthday command (API-side) to use integers instead of strings
-    // restore roles upon member join
-
     bot.on_ready([](const dpp::ready_t& event) {
         std::cout << "Logged in as " << bot.me.format_username() << "\n";
         activity_swapper::start(event.owner);
