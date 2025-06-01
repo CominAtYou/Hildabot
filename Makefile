@@ -38,3 +38,7 @@ clean:
 .PHONY: debug
 debug: CXXFLAGS += -g -DDEBUG
 debug: $(TARGET)
+
+.PHONY: proddebug
+proddebug: CXXFLAGS += -g
+proddebug: $(TARGET)
