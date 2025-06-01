@@ -13,6 +13,7 @@ mongocxx::database db = client["hildabot"];
 mongocxx::database db = client["hildabot_test"];
 #endif
 
+// This is *not* thread-safe
 namespace MongoDatabase {
     mongocxx::database& get_database() {
         return db;

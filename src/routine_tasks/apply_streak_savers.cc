@@ -1,11 +1,12 @@
 #include "apply_streak_savers.h"
 #include <dpp/dpp.h>
 #include <bsoncxx/builder/basic/document.hpp>
+#include <mongocxx/client.hpp>
 #include <chrono>
 #include "db/user_entry.h"
-#include "db/mongo_database.h"
 #include "util/helpers.h"
 #include "constants.h"
+#include "config.h"
 #include "logging/logging.h"
 
 using bsoncxx::builder::basic::make_document;
@@ -16,9 +17,16 @@ namespace routine_tasks {
     void apply_streak_savers(dpp::cluster& bot) {
         logging::event(&bot, "StreakSavers", "Starting streak savers task.");
 
+        mongocxx::client client(mongocxx::uri(MONGO_URI));
+        #ifdef DEBUG
+        mongocxx::database db = client["hildabot_test"];
+        #else
+        mongocxx::database db = client["hildabot"];
+        #endif
+
         const int64_t today_midnight = util::midnight_today_seconds();
 
-        auto cursor = MongoDatabase::get_database()["users"].find(
+        auto cursor = db["users"].find(
             make_document(kvp("streak.expiry", today_midnight))
         );
 
@@ -41,7 +49,7 @@ namespace routine_tasks {
 
             const int64_t new_expiry = util::midnight_seconds_in_days(super_count > 0 ? 7 : 3);
 
-            MongoDatabase::get_database()["users"].update_one(
+            db["users"].update_one(
                 make_document(kvp("_id", user_id)),
                 make_document(kvp("$set", make_document(
                     kvp("streak.expiry", new_expiry)
@@ -49,7 +57,7 @@ namespace routine_tasks {
             );
 
             if (super_count > 0) {
-                MongoDatabase::get_database()["users"].update_one(
+                db["users"].update_one(
                     make_document(kvp("_id", user_id)),
                     make_document(kvp("$inc", make_document(
                         kvp("items.streak_savers.super", -1)
@@ -57,7 +65,7 @@ namespace routine_tasks {
                 );
             }
             else {
-                MongoDatabase::get_database()["users"].update_one(
+                db["users"].update_one(
                     make_document(kvp("_id", user_id)),
                     make_document(kvp("$inc", make_document(
                         kvp("items.streak_savers.standard", -1)

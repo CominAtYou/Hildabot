@@ -3,11 +3,12 @@
 #include <string>
 #include <format>
 #include <bsoncxx/builder/basic/document.hpp>
-#include "db/mongo_database.h"
+#include <mongocxx/client.hpp>
 #include "db/user_entry.h"
 #include "logging/logging.h"
 #include "util/helpers.h"
 #include "constants.h"
+#include "config.h"
 
 using bsoncxx::builder::basic::make_document;
 using bsoncxx::builder::basic::kvp;
@@ -16,10 +17,17 @@ namespace routine_tasks {
     dpp::task<void> streak_warnings(dpp::cluster& bot) {
         logging::event(&bot, "StreakWarnings", "Starting streak warnings task.");
 
+        mongocxx::client client(mongocxx::uri(MONGO_URI));
+        #ifdef DEBUG
+        mongocxx::database db = client["hildabot_test"];
+        #else
+        mongocxx::database db = client["hildabot"];
+        #endif
+
         const int64_t tomorrow_midnight = util::midnight_tomorrow_seconds();
         const int64_t midnight_three_days_from_now = util::midnight_seconds_in_days(3);
 
-        auto tomorrow_cursor = MongoDatabase::get_database()["users"].find(
+        auto tomorrow_cursor = db["users"].find(
             make_document(kvp("streak.expiry", tomorrow_midnight))
         );
 
@@ -37,7 +45,7 @@ namespace routine_tasks {
             co_await bot.co_direct_message_create(user_id, embed);
         }
 
-        auto three_days_cursor = MongoDatabase::get_database()["users"].find(
+        auto three_days_cursor = db["users"].find(
             make_document(kvp("streak.expiry", midnight_three_days_from_now))
         );
 

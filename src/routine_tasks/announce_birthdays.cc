@@ -2,16 +2,17 @@
 #include <dpp/dpp.h>
 #include <vector>
 #include <bsoncxx/builder/basic/document.hpp>
+#include <mongocxx/client.hpp>
 #include <chrono>
 #include <format>
 #include <algorithm>
 #include <exception>
 #include <string>
 #include <optional>
-#include "db/mongo_database.h"
 #include "util/helpers.h"
 #include "logging/logging.h"
 #include "constants.h"
+#include "config.h"
 
 using bsoncxx::builder::basic::make_document;
 using bsoncxx::builder::basic::kvp;
@@ -19,6 +20,13 @@ using bsoncxx::builder::basic::kvp;
 namespace routine_tasks {
     dpp::task<void> announce_birthdays(dpp::cluster& bot) {
         logging::event(&bot, "Birthdays", "Starting birthdays task.");
+
+        mongocxx::client client(mongocxx::uri(MONGO_URI));
+        #ifdef DEBUG
+        mongocxx::database db = client["hildabot_test"];
+        #else
+        mongocxx::database db = client["hildabot"];
+        #endif
 
         std::chrono::zoned_time zt{"America/Chicago", std::chrono::system_clock::now()};
         // get yesterday's date
@@ -28,7 +36,7 @@ namespace routine_tasks {
         uint32_t yesterday_day = static_cast<uint32_t>(yesterday_ymd.day());
 
         // get all users with yesterday's birthday
-        auto yesterday_cursor = MongoDatabase::get_database()["users"].find(
+        auto yesterday_cursor = db["users"].find(
             make_document(kvp("birthday.month", (int) yesterday_month), kvp("birthday.day", (int) yesterday_day))
         );
 
@@ -61,7 +69,7 @@ namespace routine_tasks {
         uint32_t day = static_cast<uint32_t>(ymd.day());
 
         // get all users with a birthday in the current month and day
-        auto cursor = MongoDatabase::get_database()["users"].find(
+        auto cursor = db["users"].find(
             make_document(kvp("birthday.month", (int) month), kvp("birthday.day", (int) day))
         );
 
