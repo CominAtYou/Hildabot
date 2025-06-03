@@ -25,5 +25,16 @@ dpp::task<void> store_item::send_success_message(const dpp::button_click_t& even
                             .set_content("-# Token Balance: " + util::format_with_commas(user_entry.get_tokens()))
                     )
             )
+            .add_component_v2(
+                dpp::component()
+                    .set_type(dpp::cot_action_row)
+                    .add_component(
+                        dpp::component()
+                            .set_type(dpp::cot_button)
+                            .set_label("Return to Store")
+                            .set_id(std::format("store_return_to_menu:{}:{}", event.command.usr.id.str(), util::seconds_since_epoch()))
+                            .set_style(dpp::cos_primary)
+                    )
+            )
     );
 }

@@ -120,7 +120,7 @@ namespace store {
                                         dpp::component()
                                             .set_type(dpp::cot_button)
                                             .set_label("No")
-                                            .set_id(std::format("store_return_to_menu:{}:{}:{}", event.command.usr.id.str(), "null", util::seconds_since_epoch()))
+                                            .set_id(std::format("store_return_to_menu:{}:{}", event.command.usr.id.str(), util::seconds_since_epoch()))
                                             .set_style(dpp::cos_secondary)
                                     )
                             )

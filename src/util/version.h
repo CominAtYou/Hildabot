@@ -1,3 +1,3 @@
 #pragma once
-#define VERSION "3.1.4"
-#define BUILD_NUMBER "12B010"
+#define VERSION "3.1.5"
+#define BUILD_NUMBER "12B011"
