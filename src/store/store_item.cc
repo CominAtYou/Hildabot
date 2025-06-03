@@ -33,7 +33,7 @@ dpp::task<void> store_item::send_success_message(const dpp::button_click_t& even
                             .set_type(dpp::cot_button)
                             .set_label("Return to Store")
                             .set_id(std::format("store_return_to_menu:{}:{}", event.command.usr.id.str(), util::seconds_since_epoch()))
-                            .set_style(dpp::cos_primary)
+                            .set_style(dpp::cos_secondary)
                     )
             )
     );
