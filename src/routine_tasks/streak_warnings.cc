@@ -39,7 +39,7 @@ namespace routine_tasks {
 
             dpp::confirmation_callback_t callback = co_await bot.co_user_get_cached(user_id);
             if (callback.is_error()) {
-                logging::error(&bot, "StreakWarnings", std::format("Failed to get user {}: {}", user_id, callback.get_error().message));
+                logging::event(&bot, "StreakWarnings", "Failed to get user {}: {}", user_id, callback.get_error().message);
                 continue;
             }
 
@@ -53,9 +53,9 @@ namespace routine_tasks {
             auto result = co_await bot.co_direct_message_create(user_id, embed);
 
             if (result.is_error()) {
-                logging::error(&bot, "StreakWarnings", std::format("Failed to send next-day streak warning to {} ({}): {}", user.username, user_id, result.get_error().message));
+                logging::event(&bot, "StreakWarnings", "Failed to send next-day streak warning to {} ({}): {}", user.username, user_id, result.get_error().message);
             } else {
-                logging::event(&bot, "StreakWarnings", std::format("Sent next-day streak warning to user {} ({})", user.username, user_id));
+                logging::event(&bot, "StreakWarnings", "Sent next-day streak warning to user {} ({})", user.username, user_id);
             }
         }
 
@@ -71,7 +71,7 @@ namespace routine_tasks {
 
             dpp::confirmation_callback_t user_opt = co_await bot.co_user_get_cached(user_id);
             if (user_opt.is_error()) {
-                logging::event(&bot, "StreakWarnings", std::format("Failed to get user {}: {}", user_id, user_opt.get_error().message));
+                logging::event(&bot, "StreakWarnings", "Failed to get user {}: {}", user_id, user_opt.get_error().message);
                 continue;
             }
 
@@ -85,9 +85,9 @@ namespace routine_tasks {
             auto result = co_await bot.co_direct_message_create(user_id, embed);
 
             if (result.is_error()) {
-                logging::event(&bot, "StreakWarnings", std::format("Failed to send three-day streak warning to user {} ({}): {}", user.username, user_id, result.get_error().message));
+                logging::event(&bot, "StreakWarnings", "Failed to send three-day streak warning to user {} ({}): {}", user.username, user_id, result.get_error().message);
             } else {
-                logging::event(&bot, "StreakWarnings", std::format("Sent three-day streak warning to user {} ({})", user.username, user_id));
+                logging::event(&bot, "StreakWarnings", "Sent three-day streak warning to user {} ({})", user.username, user_id);
             }
         }
 
