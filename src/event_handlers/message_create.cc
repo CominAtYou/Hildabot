@@ -10,6 +10,8 @@ bool test_message_validity(const dpp::message& message) {
     if (message.webhook_id != 0) return false;
     if (message.type != dpp::mt_default && message.type != dpp::mt_reply) return false;
     if (message.content.empty() && message.attachments.empty()) return false;
+    if (message.is_dm() && (message.content == "h!levelalert" || message.content == "h!streakwarning")) return true;
+    if (!message.guild_id.empty() && message.guild_id != BASE_GUILD_ID) return false;
 
     return true;
 }
