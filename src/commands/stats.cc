@@ -45,7 +45,7 @@ namespace commands {
             dpp::guild_member guild_member;
 
             if (id != event.msg.author.id) {
-                auto member = co_await event.owner->co_guild_get_member(BASE_GUILD_ID, id);
+                auto member = co_await event.owner->co_guild_get_member(event.msg.guild_id, id);
 
                 if (member.is_error()) {
                     co_await event.co_send("That ID doesn't seem to belong to anyone here.");
